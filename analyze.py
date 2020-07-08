@@ -20,21 +20,21 @@ for convo in convo_dirs:
         f = json.load(f)
 
         title = f['title'].encode('latin-1').decode('utf-8')
-        if not 'title' in tmp:
-            tmp['title'] = title
+        if not 'name' in tmp:
+            tmp['name'] = title
 
         count = len(f['messages'])
-        if not 'count' in tmp:
-            tmp['count'] = count
+        if not 'number' in tmp:
+            tmp['number'] = count
         else:
-            tmp['count'] += count
+            tmp['number'] += count
         total += count
     convo_list.append(tmp)
 
 for d in convo_list:
-    d['percent'] = d['count'] / total * 100
+    d['value'] = d['number'] / total * 100
 
-convo_list.sort(key=lambda x: x['count'], reverse=True)
+convo_list.sort(key=lambda x: x['number'], reverse=True)
 
 content = {
     'total': total,
