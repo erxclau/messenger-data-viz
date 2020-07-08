@@ -1,5 +1,9 @@
 # messenger-data-viz
 
+## Description
+
+This repository contains code to analyze and visualize your Facebook Messenger conversations using various Python packages and D3.js.
+
 ## Instructions
 
 ### Getting Data From Facebook
@@ -12,17 +16,32 @@
 6. Select JSON as the format.
 7. Select low media quality to reduce the file size of images and videos.
 8. Click "Create File".
-9. Facebook will send you two emails: one confirming that you requested for data and another one alerting you when your file has been created.
-10. Click on the "Available Copies" tab to download your data. These copies expire four days after they are created.
+9. Facebook will send you two emails: one confirming that you requested for data and another one alerting you when your file has been created. This may take several minutes.
+10. Click on the "Available Copies" tab to download your data. The folder will be called `facebook-<YOUR_USERNAME>` These copies expire four days after they are created.
+11. Extract the files from the downloaded zipped folder.
 
 For reference, when I downloaded around 8 years of data, I ended up with over 2 gigabytes of data. And I didn't extensively use Messenger for those 8 years.
 
-## Setting up your Python Environment
+### Cloning the repository
+
+Run the following command in your terminal:
+
+```console
+git clone https://github.com/ericlau00/messenger-data-viz.git
+```
+
+Move into the repository by running the following:
+
+```console
+cd messenger-data-viz
+```
+
+### Setting Up Your Python Environment
 
 - Download a version of python3 and pip.
 - To prevent conflicts with globally installed packages, it is recommended to run everything in a virtual environment.
 
-### Setting Up a Virtual Environment
+#### Setting Up a Virtual Environment
 
 - Run `python -V` or `python3 -V` and in the following steps, use the python command that says you are using a version of python3.
 - Run `python -m venv venv` to create a virtual environment.
@@ -34,10 +53,17 @@ For reference, when I downloaded around 8 years of data, I ended up with over 2 
     - `. venv/bin/activate`
 - To exit your virtual environment, run `deactivate`.
 
-### Installing Dependencies
+#### Installing Dependencies
 
 - Install necessary dependencies by running the following command in your virtual environment:
 
-```bash
+```console
 pip install -r requirements.txt
 ```
+
+### Using Your Data
+
+- Move the `messages` folder inside `facebook-<YOUR_USERNAME>` into the root level of this repository.
+- The script will only analyze messages in the `inbox` folder (i.e. not `archived_threads` or `message_requests`).
+  - If you'd like to analyze `archived_threads` or `message_requests`, simply move the conversation folders inside those folders into `inbox`.
+  - If there are conversations you do not want to analyze, move them out of `inbox`.
