@@ -40,7 +40,7 @@ let createArc = (id, data) => {
     svg.selectAll('path')
         .data(arcs)
         .join('path')
-        .attr('fill', (d,i) => colorScale[i % colorScale.length])
+        .attr('fill', (d, i) => colorScale[i % colorScale.length])
         .attr('d', arc)
         .append('title')
         .text(d => `${d.data.name}: ${d.value.toPrecision(3)}% (${d.data.number})`);
