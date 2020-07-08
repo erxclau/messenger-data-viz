@@ -26,13 +26,13 @@ For reference, when I downloaded around 8 years of data, I ended up with over 2 
 
 Run the following command in your terminal:
 
-```console
+```shell
 git clone https://github.com/ericlau00/messenger-data-viz.git
 ```
 
 Move into the repository by running the following:
 
-```console
+```shell
 cd messenger-data-viz
 ```
 
@@ -57,7 +57,7 @@ cd messenger-data-viz
 
 - Install necessary dependencies by running the following command in your virtual environment:
 
-```console
+```shell
 pip install -r requirements.txt
 ```
 

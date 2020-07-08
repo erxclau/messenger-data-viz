@@ -3,3 +3,6 @@ venv
 
 # Facebook Messages
 messages
+
+# Analysis
+data.json
