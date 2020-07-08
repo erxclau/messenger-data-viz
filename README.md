@@ -67,3 +67,6 @@ pip install -r requirements.txt
 - The script will only analyze messages in the `inbox` folder (i.e. not `archived_threads` or `message_requests`).
   - If you'd like to analyze `archived_threads` or `message_requests`, simply move the conversation folders inside those folders into `inbox`.
   - If there are conversations you do not want to analyze, move them out of `inbox` or delete them.
+- Run `python analyze.py`.
+- Run `python -m http.server 5000 --bind 127.0.0.1`
+- Go to <http://localhost:5000/> or <http://127.0.0.1:5000/>
