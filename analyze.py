@@ -32,7 +32,9 @@ for convo in convo_dirs:
     convo_list.append(tmp)
 
 for d in convo_list:
-    d['percent'] = d['count'] / total
+    d['percent'] = d['count'] / total * 100
+
+convo_list.sort(key=lambda x: x['count'], reverse=True)
 
 content = {
     'total': total,

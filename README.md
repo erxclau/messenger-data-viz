@@ -66,4 +66,4 @@ pip install -r requirements.txt
 - Move the `messages` folder inside `facebook-<YOUR_USERNAME>` into the root level of this repository.
 - The script will only analyze messages in the `inbox` folder (i.e. not `archived_threads` or `message_requests`).
   - If you'd like to analyze `archived_threads` or `message_requests`, simply move the conversation folders inside those folders into `inbox`.
-  - If there are conversations you do not want to analyze, move them out of `inbox`.
+  - If there are conversations you do not want to analyze, move them out of `inbox` or delete them.
