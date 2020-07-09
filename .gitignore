@@ -6,3 +6,6 @@ messages
 
 # Analysis
 data.json
+
+# Visual Studio Code
+.vscode

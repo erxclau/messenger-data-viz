@@ -30,6 +30,8 @@ Run the following command in your terminal:
 git clone https://github.com/ericlau00/messenger-data-viz.git
 ```
 
+Alternatively, download the zip file for this repository which can be found by clicking on the green "Code" button at the top of the page.
+
 Move into the repository by running the following:
 
 ```shell
