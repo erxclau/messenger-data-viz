@@ -10,7 +10,7 @@ window.onload = async () => {
 
     createArc('current-percent', data['current_percent']);
 
-    createStackArea('messages-per-day', data['msgs_per_day']);
+    createStackArea('messages-per', data['msgs_per']['data']);
 
     // let individuals = document.getElementById('individual-conversations');
     // let convos = data['conversation_names'];

@@ -7,7 +7,8 @@ from datetime import datetime, timedelta
 def strtodate(string):
     return datetime.strptime(string, '%Y-%m-%d')
 
-def find_per_day_info(data, names):
+def find_per_info(data, names):
+    increment = 'daily'
     msg_dict = dict()
     tmp_total = dict()
     for convo in data:
@@ -24,9 +25,7 @@ def find_per_day_info(data, names):
             else:
                 tmp_total[date] += msgs[date]
 
-    # pprint(sorted(msg_dict.keys()))
     keys = list(sorted(msg_dict.keys()))
-    # pprint(len(keys))
 
     i = 0
     length = len(keys) - 1
@@ -46,14 +45,33 @@ def find_per_day_info(data, names):
         length = len(keys) - 1
         i += distance
 
-    # pprint(msg_dict['2013-04-23'])
+    dates = [strtodate(date) for date in keys]
+    if len(dates) > 365 * 2:
+        increment = 'weekly'
+        tmp_msg_dict = dict()
+        one_day = timedelta(days=1)
+        while dates[0].weekday() != 6:
+            day_before = dates[0] - one_day
+            string = day_before.isoformat()[:10]
+            msg_dict[string] = dict()
+            for name in names:
+                msg_dict[string][name] = 0
+            tmp_total[string] = 0
+            dates.insert(0, day_before)
+        curr_week = dates[0]
+        for i in range(len(dates)):
+            if dates[i].weekday() == 6:
+                curr_week = dates[i]
+            else:
+                week_str = curr_week.isoformat()[:10]
+                curr_str = dates[i].isoformat()[:10]
 
-    # dates = [strtodate(date) for date in keys]
+                for name in msg_dict[curr_str].keys():
+                    msg_dict[week_str][name] += msg_dict[curr_str][name]
+                tmp_total[week_str] += tmp_total[curr_str]
 
-    # for date in dates[:100]:
-    #     print(date, date.weekday())
-
-    # print(len(dates))
+                msg_dict.pop(curr_str)
+                tmp_total.pop(curr_str)
 
     msg_list = list()
     percent_list = list()
@@ -73,7 +91,7 @@ def find_per_day_info(data, names):
         msg_list.append(count_val)
         percent_list.append(percent_val)
 
-    return msg_list, percent_list
+    return increment, msg_list, percent_list
 
 
 def get_msgs_day_convo(messages):
@@ -147,14 +165,17 @@ for convo in convo_dirs:
     names_dict[convo] = tmp_name
 
 find_current_percentage(current_percent)
-msgs_per_day, percent_per_day = find_per_day_info(msgs_per_day, names)
+per_increment, msgs_per, percent_per = find_per_info(msgs_per_day, names)
 
 content = {
     'total': total,
     'current_percent': current_percent,
-    'msgs_per_day': msgs_per_day,
-    'percent_per_day': percent_per_day,
-    'conversation_names': names_dict
+    'msgs_per': {
+        'data': msgs_per,
+        'increment': per_increment
+    }
+    # 'percent_per_day': percent_per_day,
+    # 'conversation_names': names_dict
 }
 
 writefile = f"{fp}/data.json"
