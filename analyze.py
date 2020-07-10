@@ -2,8 +2,10 @@ import os
 import time
 import json
 from pprint import pprint
-from datetime import datetime
+from datetime import datetime, timedelta
 
+def strtodate(string):
+    return datetime.strptime(string, '%Y-%m-%d')
 
 def find_per_day_info(data, names):
     msg_dict = dict()
@@ -22,6 +24,37 @@ def find_per_day_info(data, names):
             else:
                 tmp_total[date] += msgs[date]
 
+    # pprint(sorted(msg_dict.keys()))
+    keys = list(sorted(msg_dict.keys()))
+    # pprint(len(keys))
+
+    i = 0
+    length = len(keys) - 1
+    while i < length:
+        currD = strtodate(keys[i])
+        nextD = strtodate(keys[i+1])
+        diff = nextD - currD
+        distance = diff.days
+        for j in range(distance - 1):
+            tmp = currD + timedelta(j + 1)
+            string = tmp.isoformat()[:10]
+            msg_dict[string] = dict()
+            for name in names:
+                msg_dict[string][name] = 0
+            tmp_total[string] = 0
+            keys.insert(i+j+1, string)
+        length = len(keys) - 1
+        i += distance
+
+    # pprint(msg_dict['2013-04-23'])
+
+    # dates = [strtodate(date) for date in keys]
+
+    # for date in dates[:100]:
+    #     print(date, date.weekday())
+
+    # print(len(dates))
+
     msg_list = list()
     percent_list = list()
     for date in sorted(msg_dict.keys()):
@@ -29,8 +62,9 @@ def find_per_day_info(data, names):
         count_val = msg_dict[date]
 
         percent_val = {
-            name: count_val[name] / tmp_total[date] * 100
-            for name in count_val
+            name:
+            (count_val[name] / tmp_total[date] * 100) if tmp_total[date] != 0 else 0
+            for name in count_val.keys()
         }
 
         count_val['date'] = date
@@ -111,7 +145,6 @@ for convo in convo_dirs:
 
     names.append(tmp_name)
     names_dict[convo] = tmp_name
-    # break
 
 find_current_percentage(current_percent)
 msgs_per_day, percent_per_day = find_per_day_info(msgs_per_day, names)
