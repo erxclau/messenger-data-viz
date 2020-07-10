@@ -13,8 +13,8 @@ def find_per_day_info(data, names):
         for date in msgs.keys():
             if not date in msg_dict:
                 msg_dict[date] = dict()
-            for name in names:
-                msg_dict[date][name] = 0
+                for name in names:
+                    msg_dict[date][name] = 0
             msg_dict[date][convo['name']] = msgs[date]
 
             if not date in tmp_total:

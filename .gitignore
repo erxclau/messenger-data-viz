@@ -2,7 +2,7 @@
 venv
 
 # Facebook Messages
-messages
+messages*
 
 # Analysis
 data.json

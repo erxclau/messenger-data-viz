@@ -26,8 +26,6 @@ let createStackArea = (id, data) => {
 
     let series = d3.stack()
         .keys(keys)
-        // .offset(d3.stackOffsetDiverging)
-        // .order(d3.stackOrderAscending)
         (data);
 
     let x = d3.scaleUtc()
@@ -55,8 +53,6 @@ let createStackArea = (id, data) => {
         .attr('d', area)
         .append('title')
         .text(({ key }) => key);
-
-    console.log(series);
 }
 
 export { createStackArea };
