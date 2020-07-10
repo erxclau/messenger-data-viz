@@ -5,7 +5,7 @@ from pprint import pprint
 from datetime import datetime
 
 
-def find_per_day_info(data):
+def find_per_day_info(data, names):
     msg_dict = dict()
     tmp_total = dict()
     for convo in data:
@@ -13,6 +13,8 @@ def find_per_day_info(data):
         for date in msgs.keys():
             if not date in msg_dict:
                 msg_dict[date] = dict()
+            for name in names:
+                msg_dict[date][name] = 0
             msg_dict[date][convo['name']] = msgs[date]
 
             if not date in tmp_total:
@@ -69,6 +71,7 @@ def get_convo_info(convo):
     tmp = dict()
     tmp['number'] = 0
     messages = list()
+    name = str()
     msg_files = [f.name for f in os.scandir(f"{inbox}/{convo}") if f.is_file()]
     for msg_file in msg_files:
         f = open(f"{inbox}/{convo}/{msg_file}")
@@ -77,12 +80,13 @@ def get_convo_info(convo):
         if not 'name' in tmp:
             title = f['title'].encode('latin-1').decode('utf-8')
             tmp['name'] = title
+            name = title
 
         msgs = f['messages']
         tmp['number'] += len(msgs)
         messages.extend(msgs)
 
-    return tmp, messages
+    return tmp, messages, name
 
 
 start = time.time()
@@ -94,10 +98,11 @@ convo_dirs = [f.name for f in os.scandir(inbox)]
 
 current_percent = list()
 msgs_per_day = list()
+names = list()
 total = 0
 
 for convo in convo_dirs:
-    convo_info, messages = get_convo_info(convo)
+    convo_info, messages, tmp_name = get_convo_info(convo)
 
     total += convo_info['number']
     current_percent.append(convo_info)
@@ -106,10 +111,12 @@ for convo in convo_dirs:
         'name': convo_info['name'],
         'messages': get_msgs_day_convo(messages)
     })
+
+    names.append(tmp_name)
     # break
 
 find_current_percentage(current_percent)
-msgs_per_day, percent_per_day = find_per_day_info(msgs_per_day)
+msgs_per_day, percent_per_day = find_per_day_info(msgs_per_day, names)
 
 content = {
     'total': total,

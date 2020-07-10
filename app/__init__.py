@@ -15,8 +15,8 @@ def root():
 
 @app.route('/data')
 def data():
-    f = f"{fp}/../data.json"
-    return open(f).read()
+    f = open(f"{fp}/../data.json", encoding='latin-1')
+    return f.read().encode('latin-1').decode('utf-8')
 
 
 if __name__ == "__main__":
