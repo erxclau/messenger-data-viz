@@ -26,6 +26,15 @@ let createStackArea = (id, data) => {
 
     let series = d3.stack()
         .keys(keys)
+        // this combination seems fit for percentage
+        // .offset(d3.stackOffsetExpand)
+        // .order(d3.stackOrderAscending)
+
+        // this seems fit for a regular stacked graph
+        // .offset(d3.stackOffsetNone)
+        // .order(d3.stackOrderDescending)
+
+        // this looks like a streamgraph
         .offset(d3.stackOffsetSilhouette)
         .order(d3.stackOrderAscending)
         (data);
@@ -39,7 +48,7 @@ let createStackArea = (id, data) => {
         .range([height - margin.bottom, margin.top]);
 
     let area = d3.area()
-        // .curve(d3.curveMonotoneX)
+        .curve(d3.curveMonotoneX)
         .x(d => x(d.data.date))
         .y0(d => y(d[0]))
         .y1(d => y(d[1]));
@@ -58,10 +67,14 @@ let createStackArea = (id, data) => {
             let coords = d3.mouse(this);
             svg
                 .append('text')
-                .attr('x', coords[0])
+                .attr('x', coords[0] - 20)
                 .attr('y', coords[1] - 20)
                 .attr('class', 'label')
                 .text(data.key);
+
+            d3.select(this)
+                .attr('stroke', 'black')
+                .attr('stroke-width', '0.75px');
 
             svg.selectAll('path')
                 .attr('fill-opacity', d => d.key != data.key ? 0.1 : 1)
@@ -71,6 +84,9 @@ let createStackArea = (id, data) => {
 
             svg.selectAll('path')
                 .attr('fill-opacity', 1);
+
+            d3.select(this)
+                .attr('stroke', 'none');
         })
 
     let xAxis = g => g
