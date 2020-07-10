@@ -1,4 +1,4 @@
-let createStackArea = (id, data) => {
+let createStackArea = (id, data, colorScale) => {
 
     for (let i = 0; i < data.length; i++) {
         data[i].date = new Date(`${data[i].date}T12:00:00`);
@@ -53,15 +53,22 @@ let createStackArea = (id, data) => {
         .y0(d => y(d[0]))
         .y1(d => y(d[1]));
 
-    let color = d3.scaleOrdinal()
+    let colorDomain = colorScale.domain();
+
+    let altColor = d3.scaleOrdinal()
         .domain(keys)
-        .range(d3.schemeAccent)
+        .range(d3.schemeDark2)
 
     svg.append('g')
         .selectAll('path')
         .data(series)
         .join('path')
-        .attr('fill', ({key}) => color(key))
+        .attr('class', 'area')
+        .attr('fill', ({key}) => {
+            return colorDomain.includes(key)
+                ? colorScale(key)
+                : altColor(key);
+        })
         .attr('d', area)
         .on('mouseover', function(data) {
             let coords = d3.mouse(this);
@@ -76,7 +83,7 @@ let createStackArea = (id, data) => {
                 .attr('stroke', 'black')
                 .attr('stroke-width', '0.75px');
 
-            svg.selectAll('path')
+            svg.selectAll('path.area')
                 .attr('fill-opacity', d => d.key != data.key ? 0.1 : 1)
         })
         .on('mouseout', function() {

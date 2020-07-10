@@ -8,9 +8,9 @@ window.onload = async () => {
 
     fillSpan('total-messages', formatNum(data['total']));
 
-    createArc('current-percent', data['current_percent']);
+    let colorScale = createArc('current-percent', data['current_percent']);
 
-    createStackArea('messages-per', data['msgs_per']['data']);
+    createStackArea('messages-per', data['msgs_per']['data'], colorScale);
 
     // let individuals = document.getElementById('individual-conversations');
     // let convos = data['conversation_names'];

@@ -10,7 +10,9 @@ let createArc = (id, data) => {
     }
     data.push(other);
 
-    let colorScale = d3.schemePastel1;
+    let colorScale = d3.scaleOrdinal()
+        .domain(data.map(({name}) => name))
+        .range(d3.schemePastel1)
 
     let svg = d3.select(`#${id}`)
         .append('svg')
@@ -39,7 +41,7 @@ let createArc = (id, data) => {
     svg.selectAll('path')
         .data(arcs)
         .join('path')
-        .attr('fill', (d, i) => colorScale[i % colorScale.length])
+        .attr('fill', d => colorScale(d.data.name))
         .attr('d', arc)
         .append('title')
         .text(d => `${d.data.name}: ${d.value.toPrecision(3)}% (${d.data.number})`);
@@ -61,6 +63,8 @@ let createArc = (id, data) => {
             .attr("y", "0.7em")
             .attr("fill-opacity", 0.7)
             .text(d => `${d.value.toPrecision(3)}%`));
+
+    return colorScale
 }
 
 export { createArc }
