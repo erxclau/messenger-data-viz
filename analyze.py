@@ -5,6 +5,28 @@ from pprint import pprint
 from datetime import datetime
 
 
+def get_messages_day(messages):
+    tmp = dict()
+    for msg in messages:
+        t = int(msg['timestamp_ms']) / 1000
+        date = datetime.fromtimestamp(t)
+
+        iso = date.isoformat()[:10]
+
+        if not iso in tmp:
+            tmp[iso] = 1
+        else:
+            tmp[iso] += 1
+    return tmp
+
+
+def find_current_percentage(data):
+    for d in data:
+        d['percent'] = d['number'] / total * 100
+
+    data.sort(key=lambda x: x['number'], reverse=True)
+
+
 def get_convo_info(convo):
     tmp = dict()
     tmp['number'] = 0
@@ -19,23 +41,8 @@ def get_convo_info(convo):
             tmp['name'] = title
 
         msgs = f['messages']
-
         tmp['number'] += len(msgs)
-
         messages.extend(msgs)
-
-        # print(msgs)
-
-        # for msg in msgs:
-        #     t = int(msg['timestamp_ms']) / 1000
-        #     date = datetime.fromtimestamp(t)
-
-        #     iso = date.isoformat()[:10]
-
-        #     if not iso in tmp['messages_by_date']:
-        #         tmp['messages_by_date'][iso] = 1
-        #     else:
-        #         tmp['messages_by_date'][iso] += 1
 
     return tmp, messages
 
@@ -48,18 +55,24 @@ inbox = f"{fp}/messages/inbox"
 convo_dirs = [f.name for f in os.scandir(inbox)]
 
 current_percent = list()
+messages_per_day = list()
 total = 0
 
 for convo in convo_dirs:
-    percent_info, messages = get_convo_info(convo)
-    total += percent_info['number']
-    current_percent.append(percent_info)
+    convo_info, messages = get_convo_info(convo)
+
+    total += convo_info['number']
+    current_percent.append(convo_info)
+
+    messages_per_day.append({
+        'name': convo_info['name'],
+        'messages': get_messages_day(messages)
+    })
     # break
 
-for d in current_percent:
-    d['percent'] = d['number'] / total * 100
 
-current_percent.sort(key=lambda x: x['number'], reverse=True)
+# pprint(messages_per_day)
+find_current_percentage(current_percent)
 
 content = {
     'total': total,
