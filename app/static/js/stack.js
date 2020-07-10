@@ -54,8 +54,24 @@ let createStackArea = (id, data) => {
         .join('path')
         .attr('fill', ({key}) => color(key))
         .attr('d', area)
-        .append('title')
-        .text(({ key }) => key);
+        .on('mouseover', function(data) {
+            let coords = d3.mouse(this);
+            svg
+                .append('text')
+                .attr('x', coords[0])
+                .attr('y', coords[1] - 20)
+                .attr('class', 'label')
+                .text(data.key);
+
+            svg.selectAll('path')
+                .attr('fill-opacity', d => d.key != data.key ? 0.1 : 1)
+        })
+        .on('mouseout', function() {
+            svg.selectAll('text.label').remove();
+
+            svg.selectAll('path')
+                .attr('fill-opacity', 1);
+        })
 
     let xAxis = g => g
         .attr("transform", `translate(0,${height - margin.bottom})`)
