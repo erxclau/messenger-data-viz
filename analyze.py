@@ -24,7 +24,12 @@ def find_per_day_info(data):
     percent_list = list()
     for date in sorted(msg_dict.keys()):
 
-        count_val = msg_dict[date]
+        count_val = {
+            name : msg_dict[date][name]
+            for name in sorted(
+                msg_dict[date], key=msg_dict[date].get, reverse=True
+                )}
+
         percent_val = {
             name: count_val[name] / tmp_total[date] * 100
             for name in count_val
