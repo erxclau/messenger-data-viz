@@ -5,10 +5,32 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>messenger-data-viz</title>
+
+        <style>
+            @import url("{{ url_for('static', filename='css/main.css') }}");
+        </style>
     </head>
 
     <body>
-        <div id="split-arc"></div>
+        <header>
+            <h1>messenger-data-viz</h1>
+            <p><b>by Eric Lau</b></p>
+            <hr>
+            <p id="description">
+                Visualize your Facebook Messenger conversations.
+            </p>
+            <hr>
+        </header>
+        <div class="container">
+            <p>
+                Across all of your converastions, there have been <span id="total-messages"></span> messages sent.
+            </p>
+            <p>
+                Which conversations make up most of these messages? Below, see which conversations are the most active.
+                Conversations that make up less than 1.5 percent of your total have been grouped as "Other".
+            </p>
+            <div id="current-percent"></div>
+        </div>
         <script src="https://d3js.org/d3.v5.min.js" charset="utf-8"></script>
         <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
     </body>

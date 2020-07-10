@@ -1,4 +1,3 @@
-
 let createArc = (id, data) => {
     let other = { 'name': 'Other', number: 0, value: 0 };
     for (let i = 0; i < data.length; i++) {
@@ -17,7 +16,7 @@ let createArc = (id, data) => {
         .append('svg')
         .attr('id', `${id}-svg`)
         .attr('width', '100%')
-        .attr('height', '75vh');
+        .attr('height', '50vh');
 
     let pseudo = svg._groups[0][0];
     let width = pseudo.clientWidth;
