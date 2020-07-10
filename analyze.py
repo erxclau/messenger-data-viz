@@ -4,8 +4,31 @@ import json
 from pprint import pprint
 from datetime import datetime
 
+def find_per_day_info(data):
+    tmp_dict = dict()
+    tmp_total = dict()
+    for convo in data:
+        msgs = convo['messages']
+        name = convo['name']
+        for date in msgs.keys():
+            if not date in tmp_dict:
+                tmp_dict[date] = dict()
+            tmp_dict[date][name] = msgs[date]
 
-def get_messages_day(messages):
+            if not date in tmp_total:
+                tmp_total[date] = msgs[date]
+            else:
+                tmp_total[date] += msgs[date]
+
+    tmp_list = list()
+    for date in sorted(tmp_dict.keys()):
+        val = tmp_dict[date]
+        val['date'] = date
+        tmp_list.append(val)
+
+    return tmp_list, tmp_total
+
+def get_msgs_day_convo(messages):
     tmp = dict()
     for msg in messages:
         t = int(msg['timestamp_ms']) / 1000
@@ -55,7 +78,7 @@ inbox = f"{fp}/messages/inbox"
 convo_dirs = [f.name for f in os.scandir(inbox)]
 
 current_percent = list()
-messages_per_day = list()
+msgs_per_day = list()
 total = 0
 
 for convo in convo_dirs:
@@ -64,15 +87,16 @@ for convo in convo_dirs:
     total += convo_info['number']
     current_percent.append(convo_info)
 
-    messages_per_day.append({
+    msgs_per_day.append({
         'name': convo_info['name'],
-        'messages': get_messages_day(messages)
+        'messages': get_msgs_day_convo(messages)
     })
     # break
 
-
-# pprint(messages_per_day)
 find_current_percentage(current_percent)
+msgs_per_day, total_per_day = find_per_day_info(msgs_per_day)
+
+pprint(msgs_per_day)
 
 content = {
     'total': total,
