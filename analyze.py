@@ -4,36 +4,46 @@ import json
 from pprint import pprint
 from datetime import datetime
 
+
 def find_per_day_info(data):
-    tmp_dict = dict()
+    msg_dict = dict()
     tmp_total = dict()
     for convo in data:
         msgs = convo['messages']
-        name = convo['name']
         for date in msgs.keys():
-            if not date in tmp_dict:
-                tmp_dict[date] = dict()
-            tmp_dict[date][name] = msgs[date]
+            if not date in msg_dict:
+                msg_dict[date] = dict()
+            msg_dict[date][convo['name']] = msgs[date]
 
             if not date in tmp_total:
                 tmp_total[date] = msgs[date]
             else:
                 tmp_total[date] += msgs[date]
 
-    tmp_list = list()
-    for date in sorted(tmp_dict.keys()):
-        val = tmp_dict[date]
-        val['date'] = date
-        tmp_list.append(val)
+    msg_list = list()
+    percent_list = list()
+    for date in sorted(msg_dict.keys()):
 
-    return tmp_list, tmp_total
+        count_val = msg_dict[date]
+        percent_val = {
+            name: count_val[name] / tmp_total[date] * 100
+            for name in count_val
+        }
+
+        count_val['date'] = date
+        percent_val['date'] = date
+
+        msg_list.append(count_val)
+        percent_list.append(percent_val)
+
+    return msg_list, percent_list
+
 
 def get_msgs_day_convo(messages):
     tmp = dict()
     for msg in messages:
         t = int(msg['timestamp_ms']) / 1000
         date = datetime.fromtimestamp(t)
-
         iso = date.isoformat()[:10]
 
         if not iso in tmp:
@@ -94,13 +104,13 @@ for convo in convo_dirs:
     # break
 
 find_current_percentage(current_percent)
-msgs_per_day, total_per_day = find_per_day_info(msgs_per_day)
-
-pprint(msgs_per_day)
+msgs_per_day, percent_per_day = find_per_day_info(msgs_per_day)
 
 content = {
     'total': total,
-    'current_percent': current_percent
+    'current_percent': current_percent,
+    'msgs_per_day': msgs_per_day,
+    'percent_per_day': percent_per_day
 }
 
 writefile = f"{fp}/data.json"
