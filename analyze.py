@@ -95,6 +95,7 @@ convo_dirs = [f.name for f in os.scandir(inbox)]
 current_percent = list()
 msgs_per_day = list()
 names = list()
+names_dict = dict()
 total = 0
 
 for convo in convo_dirs:
@@ -109,6 +110,7 @@ for convo in convo_dirs:
     })
 
     names.append(tmp_name)
+    names_dict[convo] = tmp_name
     # break
 
 find_current_percentage(current_percent)
@@ -118,7 +120,8 @@ content = {
     'total': total,
     'current_percent': current_percent,
     'msgs_per_day': msgs_per_day,
-    'percent_per_day': percent_per_day
+    'percent_per_day': percent_per_day,
+    'conversation_names': names_dict
 }
 
 writefile = f"{fp}/data.json"

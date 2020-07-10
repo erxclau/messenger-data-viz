@@ -39,6 +39,7 @@ let createStackArea = (id, data) => {
         .range([height - margin.bottom, margin.top]);
 
     let area = d3.area()
+        // .curve(d3.curveMonotoneX)
         .x(d => x(d.data.date))
         .y0(d => y(d[0]))
         .y1(d => y(d[1]));
@@ -58,7 +59,7 @@ let createStackArea = (id, data) => {
 
     let xAxis = g => g
         .attr("transform", `translate(0,${height - margin.bottom})`)
-        .call(d3.axisBottom(x).ticks(width / 50).tickSizeOuter(0))
+        .call(d3.axisBottom(x).ticks(width / 80).tickSizeOuter(0))
 
     svg.append('g')
         .attr('id', `${id}-x-axis`)

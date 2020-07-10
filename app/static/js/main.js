@@ -11,6 +11,12 @@ window.onload = async () => {
     createArc('current-percent', data['current_percent']);
 
     createStackArea('messages-per-day', data['msgs_per_day']);
+
+    let individuals = document.getElementById('individual-conversations');
+    let convos = data['conversation_names'];
+    for (const convo in convos) {
+        individuals.innerHTML += `<p><a href="/view/${convo}">${convos[convo]}</a></p>`
+    }
 }
 
 let fillSpan = (id, text) => {
