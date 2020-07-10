@@ -10,7 +10,7 @@ let createStackArea = (id, data) => {
         .append('svg')
         .attr('id', `${id}-svg`)
         .attr('width', '100%')
-        .attr('height', '100vh');
+        .attr('height', '75vh');
 
     let pseudo = svg._groups[0][0];
     let width = pseudo.clientWidth;
@@ -26,6 +26,8 @@ let createStackArea = (id, data) => {
 
     let series = d3.stack()
         .keys(keys)
+        .offset(d3.stackOffsetSilhouette)
+        .order(d3.stackOrderAscending)
         (data);
 
     let x = d3.scaleUtc()
@@ -43,7 +45,7 @@ let createStackArea = (id, data) => {
 
     let color = d3.scaleOrdinal()
         .domain(keys)
-        .range(d3.schemeCategory10)
+        .range(d3.schemeAccent)
 
     svg.append('g')
         .selectAll('path')
@@ -53,6 +55,14 @@ let createStackArea = (id, data) => {
         .attr('d', area)
         .append('title')
         .text(({ key }) => key);
+
+    let xAxis = g => g
+        .attr("transform", `translate(0,${height - margin.bottom})`)
+        .call(d3.axisBottom(x).ticks(width / 50).tickSizeOuter(0))
+
+    svg.append('g')
+        .attr('id', `${id}-x-axis`)
+        .call(xAxis);
 }
 
 export { createStackArea };

@@ -4,8 +4,6 @@ import { createStackArea } from './stack.js';
 window.onload = async () => {
     let data = await d3.json('/data');
 
-    // console.log(data);
-
     let formatNum = d3.format(',');
 
     fillSpan('total-messages', formatNum(data['total']));
