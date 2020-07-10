@@ -9,7 +9,7 @@ window.onload = async () => {
 
     fillSpan('total-messages', formatNum(data['total']));
 
-    createArc('current-percent', data['conversations'])
+    createArc('current-percent', data['current_percent'])
 }
 
 let fillSpan = (id, text) => {

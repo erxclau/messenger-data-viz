@@ -1,9 +1,9 @@
 let createArc = (id, data) => {
-    let other = { 'name': 'Other', number: 0, value: 0 };
+    let other = { 'name': 'Other', number: 0, percent: 0 };
     for (let i = 0; i < data.length; i++) {
-        if (data[i]["value"] < 1.5) {
+        if (data[i]["percent"] < 1.5) {
             other['number'] += data[i]['number']
-            other['value'] += data[i]['value']
+            other['percent'] += data[i]['percent']
             data.splice(i, i + 1);
             i--;
         }
@@ -27,7 +27,7 @@ let createArc = (id, data) => {
 
     let pie = d3.pie()
         .padAngle(0.005)
-        .value(d => d.value);
+        .value(d => d.percent);
 
     let arcs = pie(data);
 
@@ -60,7 +60,7 @@ let createArc = (id, data) => {
             .attr("x", 0)
             .attr("y", "0.7em")
             .attr("fill-opacity", 0.7)
-            .text(d => `${d.data.value.toPrecision(3)}%`));
+            .text(d => `${d.value.toPrecision(3)}%`));
 }
 
 export { createArc }

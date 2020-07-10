@@ -35,7 +35,35 @@ hr {
     border-top: 2px solid lightgray;
 }
 
-@media (max-width : 900px) {
+@media (max-width : 1200px) {
+    header {
+        margin: 3rem 15rem 1rem;
+    }
+    .container {
+        margin: 1rem 15rem;
+    }
+}
+
+
+@media (max-width : 1000px) {
+    header {
+        margin: 3rem 10rem 1rem;
+    }
+    .container {
+        margin: 1rem 10rem;
+    }
+}
+
+@media (max-width : 800px) {
+    header {
+        margin: 3rem 5rem 1rem;
+    }
+    .container {
+        margin: 1rem 5rem;
+    }
+}
+
+@media (max-width : 700px) {
     header {
         margin: 3rem 0.75rem 1rem;
     }
