@@ -24,7 +24,11 @@ let createStackArea = (id, data) => {
     let keys = Object.keys(data[0]);
     keys.pop();
 
-    let series = d3.stack().keys(keys)(data);
+    let series = d3.stack()
+        .keys(keys)
+        // .offset(d3.stackOffsetDiverging)
+        // .order(d3.stackOrderAscending)
+        (data);
 
     let x = d3.scaleUtc()
         .domain(d3.extent(data, d => d.date))
@@ -41,7 +45,7 @@ let createStackArea = (id, data) => {
 
     let color = d3.scaleOrdinal()
         .domain(keys)
-        .range(d3.schemePastel1);
+        .range(d3.schemeCategory10)
 
     svg.append('g')
         .selectAll('path')
