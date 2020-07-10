@@ -71,5 +71,6 @@ pip install -r requirements.txt
   - If there are conversations you do not want to analyze, move them out of `inbox` or delete them.
 - Run the following commands in your virtual environment
   - `python analyze.py`
-  - `python -m http.server 5000 --bind 127.0.0.1`
+  <!-- - `python -m http.server 5000 --bind 127.0.0.1` -->
+  - `python app/__init__.py` on Linux / macOS or `python app\__init__.py` on Windows.
 - Go to <http://127.0.0.1:5000/>.
