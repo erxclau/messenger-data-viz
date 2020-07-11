@@ -1,5 +1,6 @@
 import { createArc } from './svg/arc.js';
 import { createStackArea } from './svg/stack.js';
+import { fillSpan } from './utility.js';
 
 window.onload = async () => {
     let data = await d3.json('/data');
@@ -20,8 +21,4 @@ window.onload = async () => {
     for (const convo in convos) {
         individuals.innerHTML += `<p><a href="/view/${convo}">${convos[convo]}</a></p>`
     }
-}
-
-let fillSpan = (id, text) => {
-    document.getElementById(id).innerHTML = text;
 }

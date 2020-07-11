@@ -10,7 +10,12 @@
     </head>
 
     <body>
-        Hello, World!
+        <header>
+            <h1 id="name"></h1>
+        </header>
+        <div class="container">
+            <div id='message-calendar-container'></div>
+        </div>
         <script src="https://d3js.org/d3.v5.min.js" charset="utf-8"></script>
         <script type="module" src="{{ url_for('static', filename='js/individual.js') }}"></script>
     </body>
