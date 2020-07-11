@@ -32,12 +32,16 @@
             </p>
             <div id="current-percent"></div>
             <!-- <div id="percent-per-day"></div> -->
-            <!-- <p>
+            <p>
+                In the following, you can see all of your messages on a <span id="increment"></span> basis. Hover over
+                each colored section to see the conversation associated.
+            </p>
+            <div id="messages-per"></div>
+            <p>
                 View visualizations for all of your individual conversations.
-                <div id="individual-conversations"></div>
-            </p> -->
+            <div id="individual-conversations"></div>
+            </p>
         </div>
-        <div id="messages-per"></div>
         <script src="https://d3js.org/d3.v5.min.js" charset="utf-8"></script>
         <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
     </body>

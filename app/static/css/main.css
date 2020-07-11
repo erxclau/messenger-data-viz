@@ -9,11 +9,11 @@ body {
 }
 
 header {
-    margin: 3rem 20rem 1rem;
+    margin: 3rem 18rem 1rem;
 }
 
 .container {
-    margin: 1rem 20rem;
+    margin: 1rem 18rem;
     display: grid;
     grid-template-columns: 1fr;
 }

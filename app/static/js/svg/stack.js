@@ -57,6 +57,7 @@ let createStackArea = (id, data, colorScale) => {
 
     let altColor = d3.scaleOrdinal()
         .domain(keys)
+        // .range(d3.schemePaired)
         .range(d3.schemeDark2)
 
     svg.append('g')
@@ -77,6 +78,8 @@ let createStackArea = (id, data, colorScale) => {
                 .attr('x', coords[0] - 20)
                 .attr('y', coords[1] - 20)
                 .attr('class', 'label')
+                .attr('font-weight', 'bold')
+                .attr('font-family', 'sans-serif')
                 .text(data.key);
 
             d3.select(this)

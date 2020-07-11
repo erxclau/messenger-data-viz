@@ -145,6 +145,7 @@ inbox = f"{fp}/messages/inbox"
 convo_dirs = [f.name for f in os.scandir(inbox)]
 
 current_percent = list()
+individual_msgs_per_day = dict()
 msgs_per_day = list()
 names = list()
 names_dict = dict()
@@ -156,10 +157,17 @@ for convo in convo_dirs:
     total += convo_info['number']
     current_percent.append(convo_info)
 
+    daily_msgs = get_msgs_day_convo(messages)
+
     msgs_per_day.append({
         'name': convo_info['name'],
-        'messages': get_msgs_day_convo(messages)
+        'messages': daily_msgs
     })
+
+    individual_msgs_per_day[convo] = {
+        'name': convo_info['name'],
+        'messages': daily_msgs
+    }
 
     names.append(tmp_name)
     names_dict[convo] = tmp_name
@@ -173,9 +181,10 @@ content = {
     'msgs_per': {
         'data': msgs_per,
         'increment': per_increment
-    }
+    },
+    'individual_msgs_per_day': individual_msgs_per_day,
     # 'percent_per_day': percent_per_day,
-    # 'conversation_names': names_dict
+    'conversation_names': names_dict
 }
 
 writefile = f"{fp}/data.json"
