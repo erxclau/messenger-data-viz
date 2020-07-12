@@ -12,7 +12,7 @@ window.onload = async () => {
 
     data['messages'] = createYearArray(data['messages']);
 
-    console.log(data['messages']);
+    // console.log(data['messages']);
 
     createCalendar(
         data['messages']['data']['recent'],
@@ -66,5 +66,18 @@ let fillData = (data, start, end, novalue) => {
         }
     }
 
-    return { 'data': years, 'start': starts, 'end': end };
+    let curYear = new Date().getFullYear();
+    let cur = years[curYear];
+
+    let lastDateIso = getISOString(cur[cur.length - 1]['date']);
+    let lastDate = isoToDate(lastDateIso);
+    lastDate.setDate(lastDate.getDate() + 1);
+
+    for (let i = lastDate; lastDate.getFullYear() == curYear; i.setDate(i.getDate() + 1)) {
+        let iso = getISOString(i);
+        let time = isoToDate(iso);
+        years[curYear].push({ 'date': time, 'value': 0 });
+    }
+
+    return { 'data': years, 'start': starts };
 }
