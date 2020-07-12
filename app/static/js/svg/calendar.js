@@ -1,13 +1,13 @@
 import { getISOString, legend } from '../utility.js';
 
-let createCalendar = (data, start, id, domain, ncolors, legendDesc, tooltip) => {
+let createCalendar = (data, start, id, ncolors, legendDesc, tooltip) => {
 
     // https://github.com/d3/d3-scale-chromatic color scale reference
     let colors = d3.schemeBlues[ncolors];
     colors.shift();
 
     let colorMapper = d3.scaleQuantize()
-        .domain(domain)
+        .domain([0, d3.max(data, d => d.value) * 0.7])
         .range(colors)
         .nice();
 

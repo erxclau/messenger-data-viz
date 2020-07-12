@@ -17,8 +17,7 @@ window.onload = async () => {
     createCalendar(
         data['messages']['array'],
         data['messages']['start'],
-        'message-calendar-container',
-        [0, 700], 8,
+        'message-calendar-container', 8,
         'Number of messages',
         d => `${d.value} messages on ${d.date.toDateString()}`
     );
