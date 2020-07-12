@@ -20,7 +20,7 @@ let createCalendar = (data, start, id, ncolors, legendDesc, tooltip) => {
     let countDay = d => d.getUTCDay();
     let timeWeek = d3.utcSunday;
 
-    markSideLabels(calendar, cellSize, countDay);
+    markSideLabels(calendar, cellSize, countDay, start);
 
     let startOffset = timeWeek.count(d3.utcYear(start), start);
 
@@ -64,14 +64,14 @@ let initializeCalendarSVG = (width, height, cellSize, id) => {
         .attr('transform', `translate(40.5, ${cellSize * 1.5})`);
 }
 
-let markSideLabels = (calendar, cellSize, countDay) => {
+let markSideLabels = (calendar, cellSize, countDay, start) => {
 
     calendar.append('text')
         .attr('x', -5)
         .attr('y', -5)
         .attr('font-weight', 'bold')
         .attr('text-anchor', 'end')
-        .text('2019')
+        .text(start.getFullYear())
 
     let formatDay = d => 'SMTWTFS'[d.getUTCDay()];
 
@@ -98,11 +98,13 @@ let markMonths = (calendar, start) => {
     for (let i = tempDate; i <= endDate; i.setMonth(i.getMonth() + 1), i.setDate(1)) {
         let rect = document.getElementById(getISOString(i));
 
-        calendar.append('text')
-            .datum(months[i.getMonth()])
-            .attr('x', rect.getAttribute('x'))
-            .attr('y', -5)
-            .text(d => d)
+        if (rect != null) {
+            calendar.append('text')
+                .datum(months[i.getMonth()])
+                .attr('x', rect.getAttribute('x'))
+                .attr('y', -5)
+                .text(d => d)
+        }
     }
 }
 

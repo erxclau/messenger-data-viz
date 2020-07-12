@@ -15,8 +15,8 @@ window.onload = async () => {
     console.log(data['messages']);
 
     createCalendar(
-        data['messages']['array'],
-        data['messages']['start'],
+        data['messages']['data']['recent'],
+        data['messages']['start']['recent'],
         'message-calendar-container', 8,
         'Number of messages',
         d => `${d.value} messages on ${d.date.toDateString()}`
@@ -29,24 +29,42 @@ let createYearArray = (data) => {
     start.setFullYear(now.getFullYear() - 1);
 
     let res = fillData(data, start, now, 0);
-    return { 'array': res['array'], 'start': res['start'] };
+    return { 'data': res['data'], 'start': res['start'] };
 }
 
 let fillData = (data, start, end, novalue) => {
-    let arr = new Array();
 
-    let tmp = getISOString(start);
+    let beginning = isoToDate(`${Object.keys(data)[0].substr(0, 4)}-01-01`);
 
-    for (let i = start; i <= end; i.setDate(i.getDate() + 1)) {
+    let years = { 'recent': new Array() };
+    let starts = { 'recent': start };
+
+    let tmp = getISOString(beginning);
+
+    for (let i = beginning; i <= end; i.setFullYear(i.getFullYear() + 1)) {
         let iso = getISOString(i);
-        let time = isoToDate(iso);
-
-        let value = (iso in data) ? data[iso] : novalue
-
-        arr.push({ 'date': time, 'value': value });
+        let y = i.getFullYear();
+        years[y] = new Array();
+        starts[y] = isoToDate(iso);
     }
 
-    start = isoToDate(tmp);
+    beginning = isoToDate(tmp);
 
-    return { 'array': arr, 'start': start, 'end': end };
+    for (let i = beginning; i <= end; i.setDate(i.getDate() + 1)) {
+        let iso = getISOString(i);
+        let time = isoToDate(iso);
+        let year = time.getFullYear();
+
+        let value = (iso in data) ? data[iso] : novalue;
+
+        let obj = { 'date': time, 'value': value };
+
+        years[year].push(obj);
+
+        if (time >= start && time <= end) {
+            years['recent'].push(obj);
+        }
+    }
+
+    return { 'data': years, 'start': starts, 'end': end };
 }
