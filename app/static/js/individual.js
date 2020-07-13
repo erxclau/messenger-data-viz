@@ -13,6 +13,8 @@ window.onload = async () => {
     data['messages'] = createYearArray(data['messages']);
     let messages = data['messages'];
 
+    console.log(messages);
+
     let cur = 'Recent';
 
     let cellSize = 16;
@@ -91,7 +93,9 @@ let fillData = (data, start, end, novalue) => {
         starts[y] = isoToDate(iso);
     }
 
-    beginning = isoToDate(tmp);
+    beginning = (start < beginning)
+        ? isoToDate(getISOString(start))
+        : isoToDate(tmp)
 
     for (let i = beginning; i <= end; i.setDate(i.getDate() + 1)) {
         let iso = getISOString(i);
@@ -102,7 +106,9 @@ let fillData = (data, start, end, novalue) => {
 
         let obj = { 'date': time, 'value': value };
 
-        years[`${year}`].push(obj);
+        if (`${year}` in years) {
+            years[`${year}`].push(obj);
+        }
 
         if (time >= start && time <= end) {
             years['Recent'].push(obj);
