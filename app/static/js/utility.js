@@ -32,14 +32,12 @@ function legend(
     d3.select(`#${id}-legend-colors`)
         .selectAll('rect')
         .data(color.range())
-        .join(
-            enter => enter.append('rect')
-                .attr('x', (d, i) => x(i - 1))
-                .attr('y', marginTop)
-                .attr('width', (d, i) => x(i) - x(i - 1))
-                .attr('height', height - marginTop - marginBottom)
-                .attr('fill', d => d)
-        );
+        .join('rect')
+        .attr('x', (d, i) => x(i - 1))
+        .attr('y', marginTop)
+        .attr('width', (d, i) => x(i) - x(i - 1))
+        .attr('height', height - marginTop - marginBottom)
+        .attr('fill', d => d)
 
     let tickAdjust = g => g.selectAll(".tick line").attr("y1", marginTop + marginBottom - height);
     const thresholds = color.thresholds();

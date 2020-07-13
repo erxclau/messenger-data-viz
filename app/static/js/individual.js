@@ -1,5 +1,5 @@
 import { getISOString, isoToDate, fillSpan } from './utility.js';
-import { createCalendar } from './svg/calendar.js';
+import { createCalendar, addData } from './svg/calendar.js';
 
 window.onload = async () => {
     let convo_id = window.location.pathname.substr(6)
@@ -13,22 +13,57 @@ window.onload = async () => {
     data['messages'] = createYearArray(data['messages']);
     let messages = data['messages'];
 
+    let cur = 'Recent';
+
+    let cellSize = 16;
+    let id = 'message-calendar-container';
+    let calendar = createCalendar(id, cellSize);
+
+    let tooltip = d => `${d.value} messages on ${d.date.toDateString()}`;
+    let ncolors = 8;
+    let legendDesc = 'Number of messages';
+
+    let colors = d3.schemeBlues[ncolors];
+    colors.shift();
+
+    addData(
+        calendar, id,
+        messages['data'][cur],
+        messages['start'][cur],
+        cellSize, tooltip,
+        colors, legendDesc
+    );
+
     let years = Object.keys(messages['start']);
     let yearContainer = document.getElementById('year-container');
 
     years.forEach(year => {
-        yearContainer.innerHTML += `<small id="year-${year}">${year}</small>`;
+        let el = document.createElement('small');
+        el.id = `year-${year}`;
+        el.textContent = year;
+        el.addEventListener('click', function () {
+            if (this.textContent != cur) {
+                setWeight(`year-${cur}`, 400);
+                cur = this.textContent;
+                setWeight(`year-${cur}`, 'bold');
+
+                addData(
+                    calendar, id,
+                    messages['data'][cur],
+                    messages['start'][cur],
+                    cellSize, tooltip,
+                    colors, legendDesc,
+                )
+            }
+        })
+        yearContainer.appendChild(el);
     });
 
-    document.getElementById('year-Recent').style.fontWeight = 'bold';
+    setWeight(`year-${cur}`, 'bold');
+}
 
-    createCalendar(
-        messages['data']['Recent'],
-        messages['start']['Recent'],
-        'message-calendar-container', 8,
-        'Number of messages',
-        d => `${d.value} messages on ${d.date.toDateString()}`
-    );
+let setWeight = (id, weight) => {
+    document.getElementById(id).style.fontWeight = weight;
 }
 
 let createYearArray = (data) => {
