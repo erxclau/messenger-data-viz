@@ -1,4 +1,4 @@
-import { getISOString, legend } from '../utility.js';
+import { getISOString, legend, delay } from '../utility.js';
 
 let createCalendar = (data, start, id, ncolors, legendDesc, tooltip) => {
 
@@ -24,9 +24,18 @@ let createCalendar = (data, start, id, ncolors, legendDesc, tooltip) => {
 
     let startOffset = timeWeek.count(d3.utcYear(start), start);
 
+    // https://stackoverflow.com/questions/16204883/d3-js-updating-title-for-svg-path
+    // https://observablehq.com/@d3/selection-join
+
     calendar.append('g')
         .selectAll('rect')
         .data(data)
+        // .join(
+        //     enter => enter.append('rect')
+        //         .attr('width', cellSize - 3)
+        //         .attr('height', cellSize - 3),
+        //     exit => exit.remove()
+        // )
         .join('rect')
         .attr('width', cellSize - 3)
         .attr('height', cellSize - 3)

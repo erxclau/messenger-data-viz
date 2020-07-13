@@ -17,8 +17,8 @@ window.onload = async () => {
     createStackArea('messages-per', data['msgs_per']['data'], colorScale);
 
     let individuals = document.getElementById('individual-conversations');
-    let convos = data['conversation_names'];
+    let convos = data['individual_msgs_per_day'];
     for (const convo in convos) {
-        individuals.innerHTML += `<p><a href="/view/${convo}">${convos[convo]}</a></p>`
+        individuals.innerHTML += `<p><a href="/view/${convo}">${convos[convo]['name']}</a></p>`
     }
 }

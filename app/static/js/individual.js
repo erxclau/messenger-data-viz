@@ -11,17 +11,20 @@ window.onload = async () => {
     fillSpan('name', name);
 
     data['messages'] = createYearArray(data['messages']);
+    let messages = data['messages'];
 
-    let years = Object.keys(data['messages']['start']);
+    let years = Object.keys(messages['start']);
     let yearContainer = document.getElementById('year-container');
 
     years.forEach(year => {
-        yearContainer.innerHTML += `<small style="padding-left: 5px; padding-right: 5px;">${year}</small>`;
+        yearContainer.innerHTML += `<small id="year-${year}">${year}</small>`;
     });
 
+    document.getElementById('year-Recent').style.fontWeight = 'bold';
+
     createCalendar(
-        data['messages']['data']['Recent'],
-        data['messages']['start']['Recent'],
+        messages['data']['Recent'],
+        messages['start']['Recent'],
         'message-calendar-container', 8,
         'Number of messages',
         d => `${d.value} messages on ${d.date.toDateString()}`
@@ -49,7 +52,7 @@ let fillData = (data, start, end, novalue) => {
     for (let i = beginning; i <= end; i.setFullYear(i.getFullYear() + 1)) {
         let iso = getISOString(i);
         let y = i.getFullYear();
-        years[y] = new Array();
+        years[`${y}`] = new Array();
         starts[y] = isoToDate(iso);
     }
 
@@ -64,7 +67,7 @@ let fillData = (data, start, end, novalue) => {
 
         let obj = { 'date': time, 'value': value };
 
-        years[year].push(obj);
+        years[`${year}`].push(obj);
 
         if (time >= start && time <= end) {
             years['Recent'].push(obj);

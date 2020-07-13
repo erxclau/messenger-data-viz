@@ -4,8 +4,10 @@ import json
 from pprint import pprint
 from datetime import datetime, timedelta
 
+
 def strtodate(string):
     return datetime.strptime(string, '%Y-%m-%d')
+
 
 def find_per_info(data, names):
     increment = 'daily'
@@ -81,7 +83,8 @@ def find_per_info(data, names):
 
         percent_val = {
             name:
-            (count_val[name] / tmp_total[date] * 100) if tmp_total[date] != 0 else 0
+            (count_val[name] / tmp_total[date] *
+             100) if tmp_total[date] != 0 else 0
             for name in count_val.keys()
         }
 
@@ -119,7 +122,6 @@ def get_convo_info(convo):
     tmp = dict()
     tmp['number'] = 0
     messages = list()
-    name = str()
     msg_files = [f.name for f in os.scandir(f"{inbox}/{convo}") if f.is_file()]
     for msg_file in msg_files:
         f = open(f"{inbox}/{convo}/{msg_file}")
@@ -128,13 +130,12 @@ def get_convo_info(convo):
         if not 'name' in tmp:
             title = f['title'].encode('latin-1').decode('utf-8')
             tmp['name'] = title
-            name = title
 
         msgs = f['messages']
         tmp['number'] += len(msgs)
         messages.extend(msgs)
 
-    return tmp, messages, name
+    return tmp, messages
 
 
 start = time.time()
@@ -148,29 +149,29 @@ current_percent = list()
 individual_msgs_per_day = dict()
 msgs_per_day = list()
 names = list()
-names_dict = dict()
 total = 0
 
 for convo in convo_dirs:
-    convo_info, messages, tmp_name = get_convo_info(convo)
+    convo_info, messages = get_convo_info(convo)
 
     total += convo_info['number']
     current_percent.append(convo_info)
 
     daily_msgs = get_msgs_day_convo(messages)
 
+    name = convo_info['name']
+
     msgs_per_day.append({
-        'name': convo_info['name'],
+        'name': name,
         'messages': daily_msgs
     })
 
     individual_msgs_per_day[convo] = {
-        'name': convo_info['name'],
+        'name': name,
         'messages': daily_msgs
     }
 
-    names.append(tmp_name)
-    names_dict[convo] = tmp_name
+    names.append(name)
 
 find_current_percentage(current_percent)
 per_increment, msgs_per, percent_per = find_per_info(msgs_per_day, names)
@@ -184,7 +185,6 @@ content = {
     },
     'individual_msgs_per_day': individual_msgs_per_day,
     # 'percent_per_day': percent_per_day,
-    'conversation_names': names_dict
 }
 
 writefile = f"{fp}/data.json"

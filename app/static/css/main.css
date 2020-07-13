@@ -35,6 +35,15 @@ hr {
     border-top: 2px solid lightgray;
 }
 
+small {
+    padding: 5px;
+}
+
+small:hover {
+    cursor: pointer;
+    font-weight: bold;
+}
+
 @media (max-width : 1200px) {
     header {
         margin: 3rem 15rem 1rem;

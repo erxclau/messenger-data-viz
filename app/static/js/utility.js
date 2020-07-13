@@ -104,4 +104,4 @@ function wrap(text, width) {
     });
 }
 
-export { getISOString, isoToDate, legend, fillSpan }
+export { getISOString, isoToDate, legend, fillSpan, delay }
