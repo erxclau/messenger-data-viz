@@ -31,7 +31,7 @@ def individual_view(id):
 @app.route('/data/<id>')
 def individual_data(id):
     f = json.loads(df)
-    return f['individual_msgs_per_day'][id]
+    return f['individual']['info'][id]
 
 
 if __name__ == "__main__":

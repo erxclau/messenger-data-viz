@@ -10,8 +10,8 @@ window.onload = async () => {
     document.title = name;
     fillSpan('name', name);
 
-    data['messages'] = createYearArray(data['messages']);
-    let messages = data['messages'];
+    data['per_day'] = createYearArray(data['per_day']);
+    let messages = data['per_day'];
 
     console.log(messages);
 
@@ -84,7 +84,7 @@ let fillData = (data, start, end, novalue) => {
     let years = { 'Recent': new Array() };
     let starts = { 'Recent': start };
 
-    let tmp = getISOString(beginning);
+    let tmp = isoToDate(getISOString(beginning));
 
     for (let i = beginning; i <= end; i.setFullYear(i.getFullYear() + 1)) {
         let iso = getISOString(i);
@@ -93,9 +93,9 @@ let fillData = (data, start, end, novalue) => {
         starts[y] = isoToDate(iso);
     }
 
-    beginning = (start < beginning)
+    beginning = (start < tmp)
         ? isoToDate(getISOString(start))
-        : isoToDate(tmp)
+        : tmp
 
     for (let i = beginning; i <= end; i.setDate(i.getDate() + 1)) {
         let iso = getISOString(i);

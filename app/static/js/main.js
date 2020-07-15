@@ -7,17 +7,19 @@ window.onload = async () => {
 
     let formatNum = d3.format(',');
 
-    fillSpan('total-messages', formatNum(data['total']));
-    fillSpan('increment', data['msgs_per']['increment']);
+    let collective = data['collective'];
+
+    fillSpan('total-messages', formatNum(collective['total']));
+    fillSpan('increment', collective['msgs_per']['increment']);
 
     console.log(data);
 
-    let colorScale = createArc('current-percent', data['current_percent']);
+    let colorScale = createArc('current-percent', collective['current_percent']);
 
-    createStackArea('messages-per', data['msgs_per']['data'], colorScale);
+    createStackArea('messages-per', collective['msgs_per']['data'], colorScale);
 
     let individuals = document.getElementById('individual-conversations');
-    let convos = data['individual_msgs_per_day'];
+    let convos = data['individual']['info'];
     for (const convo in convos) {
         individuals.innerHTML += `<p><a href="/view/${convo}">${convos[convo]['name']}</a></p>`
     }

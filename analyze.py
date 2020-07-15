@@ -146,29 +146,30 @@ inbox = f"{fp}/messages/inbox"
 convo_dirs = [f.name for f in os.scandir(inbox)]
 
 current_percent = list()
-individual_msgs_per_day = dict()
+individual_msgs = dict()
 msgs_per_day = list()
 names = list()
 total = 0
 
 for convo in convo_dirs:
     convo_info, messages = get_convo_info(convo)
+    subtotal = convo_info['number']
+    name = convo_info['name']
 
-    total += convo_info['number']
+    total += subtotal
     current_percent.append(convo_info)
 
     daily_msgs = get_msgs_day_convo(messages)
-
-    name = convo_info['name']
 
     msgs_per_day.append({
         'name': name,
         'messages': daily_msgs
     })
 
-    individual_msgs_per_day[convo] = {
+    individual_msgs[convo] = {
         'name': name,
-        'messages': daily_msgs
+        'per_day': daily_msgs,
+        # 'total': subtotal
     }
 
     names.append(name)
@@ -177,13 +178,17 @@ find_current_percentage(current_percent)
 per_increment, msgs_per, percent_per = find_per_info(msgs_per_day, names)
 
 content = {
-    'total': total,
-    'current_percent': current_percent,
-    'msgs_per': {
-        'data': msgs_per,
-        'increment': per_increment
+    'collective': {
+        'total': total,
+        'current_percent': current_percent,
+        'msgs_per': {
+            'data': msgs_per,
+            'increment': per_increment
+        }
     },
-    'individual_msgs_per_day': individual_msgs_per_day,
+    'individual': {
+        'info': individual_msgs
+    }
     # 'percent_per_day': percent_per_day,
 }
 
