@@ -6,6 +6,7 @@ import { getISOString, isoToDate, fillSpan } from './utility.js';
 
 window.onload = async () => {
     let data = await d3.json('/data');
+    console.log(data);
 
     let formatNum = d3.format(',');
 
@@ -15,12 +16,10 @@ window.onload = async () => {
     let total = collective['total'];
 
     fillSpan('total-messages', formatNum(total));
-    fillSpan('increment', collective['msgs_per']['increment']);
-
-    console.log(data);
 
     let colorScale = createArc('current-percent', collective['current_percent']);
 
+    fillSpan('increment', collective['msgs_per']['increment']);
     createStackArea('messages-per', collective['msgs_per']['data'], colorScale);
 
     let conversations = document.getElementById('conversations-container');

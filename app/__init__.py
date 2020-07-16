@@ -9,9 +9,6 @@ app = Flask(__name__)
 app.secret_key = os.urandom(32)
 fp = os.path.dirname(os.path.abspath(__file__))
 
-df = open(f"{fp}/../data.json", encoding='latin-1')
-df = df.read().encode('latin-1').decode('utf-8')
-
 
 @app.route('/')
 def root():
@@ -20,6 +17,8 @@ def root():
 
 @app.route('/data')
 def data():
+    df = open(f"{fp}/../data.json", encoding='latin-1')
+    df = df.read().encode('latin-1').decode('utf-8')
     return df
 
 

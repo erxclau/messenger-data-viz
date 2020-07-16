@@ -9,25 +9,32 @@ def strtodate(string):
     return datetime.strptime(string, '%Y-%m-%d')
 
 
-def find_per_info(data, names):
+def find_per_info(data):
     increment = 'daily'
-    msg_dict = dict()
-    tmp_total = dict()
-    for convo in data:
-        msgs = convo['messages']
+    stack_msgs_by_day = dict()
+    total_by_day = dict()
+
+    names = { key : data[key]['name'] for key in data.keys() }
+
+    convo_ids = data.keys()
+    for c_id in convo_ids:
+
+        msgs = data[c_id]['per_day']
         for date in msgs.keys():
-            if not date in msg_dict:
-                msg_dict[date] = dict()
-                for name in names:
-                    msg_dict[date][name] = 0
-            msg_dict[date][convo['name']] = msgs[date]
+            if not date in stack_msgs_by_day:
+                stack_msgs_by_day[date] = dict()
 
-            if not date in tmp_total:
-                tmp_total[date] = msgs[date]
+                for id in convo_ids:
+                    stack_msgs_by_day[date][id] = 0
+
+            stack_msgs_by_day[date][c_id] = msgs[date]
+
+            if not date in total_by_day:
+                total_by_day[date] = msgs[date]
             else:
-                tmp_total[date] += msgs[date]
+                total_by_day[date] += msgs[date]
 
-    keys = list(sorted(msg_dict.keys()))
+    keys = list(sorted(stack_msgs_by_day.keys()))
 
     i = 0
     length = len(keys) - 1
@@ -39,10 +46,10 @@ def find_per_info(data, names):
         for j in range(distance - 1):
             tmp = currD + timedelta(j + 1)
             string = tmp.isoformat()[:10]
-            msg_dict[string] = dict()
-            for name in names:
-                msg_dict[string][name] = 0
-            tmp_total[string] = 0
+            stack_msgs_by_day[string] = dict()
+            for id in convo_ids:
+                stack_msgs_by_day[string][id] = 0
+            total_by_day[string] = 0
             keys.insert(i+j+1, string)
         length = len(keys) - 1
         i += distance
@@ -55,10 +62,9 @@ def find_per_info(data, names):
         while dates[0].weekday() != 6:
             day_before = dates[0] - one_day
             string = day_before.isoformat()[:10]
-            msg_dict[string] = dict()
-            for name in names:
-                msg_dict[string][name] = 0
-            tmp_total[string] = 0
+            stack_msgs_by_day[string] = dict()
+            for id in convo_ids:
+                stack_msgs_by_day[string][id] = 0
             dates.insert(0, day_before)
         curr_week = dates[0]
         for i in range(len(dates)):
@@ -68,36 +74,24 @@ def find_per_info(data, names):
                 week_str = curr_week.isoformat()[:10]
                 curr_str = dates[i].isoformat()[:10]
 
-                for name in msg_dict[curr_str].keys():
-                    msg_dict[week_str][name] += msg_dict[curr_str][name]
-                tmp_total[week_str] += tmp_total[curr_str]
+                for name in stack_msgs_by_day[curr_str].keys():
+                    stack_msgs_by_day[week_str][name] += stack_msgs_by_day[curr_str][name]
 
-                msg_dict.pop(curr_str)
-                tmp_total.pop(curr_str)
+                stack_msgs_by_day.pop(curr_str)
 
     msg_list = list()
-    percent_list = list()
-    for date in sorted(msg_dict.keys()):
+    for date in sorted(stack_msgs_by_day.keys()):
 
-        count_val = msg_dict[date]
-
-        percent_val = {
-            name:
-            (count_val[name] / tmp_total[date] *
-             100) if tmp_total[date] != 0 else 0
-            for name in count_val.keys()
-        }
-
+        count_val = stack_msgs_by_day[date]
+        count_val = { names[key] : count_val[key] for key in count_val}
         count_val['date'] = date
-        percent_val['date'] = date
 
         msg_list.append(count_val)
-        percent_list.append(percent_val)
 
-    return increment, msg_list, percent_list
+    return increment, msg_list, total_by_day
 
 
-def get_msgs_day_convo(messages):
+def get_msgs_by_day(messages):
     tmp = dict()
     for msg in messages:
         t = int(msg['timestamp_ms']) / 1000
@@ -111,17 +105,17 @@ def get_msgs_day_convo(messages):
     return tmp
 
 
-def find_current_percentage(data):
+def find_current_percentage(data, total):
     for d in data:
         d['percent'] = d['number'] / total * 100
 
-    data.sort(key=lambda x: x['number'], reverse=True)
+    return sorted(data, key=lambda x: x['number'], reverse=True)
 
 
-def get_convo_info(convo):
+def get_conversation(convo):
     tmp = dict()
     tmp['number'] = 0
-    messages = list()
+    tmp['messages'] = list()
     msg_files = [f.name for f in os.scandir(f"{inbox}/{convo}") if f.is_file()]
     for msg_file in msg_files:
         f = open(f"{inbox}/{convo}/{msg_file}")
@@ -133,9 +127,9 @@ def get_convo_info(convo):
 
         msgs = f['messages']
         tmp['number'] += len(msgs)
-        messages.extend(msgs)
+        tmp['messages'].extend(msgs)
 
-    return tmp, messages
+    return tmp
 
 
 start = time.time()
@@ -146,50 +140,42 @@ inbox = f"{fp}/messages/inbox"
 convo_dirs = [f.name for f in os.scandir(inbox)]
 
 current_percent = list()
-individual_msgs = dict()
-msgs_per_day = list()
-names = list()
+conversations = dict()
 total = 0
 
 for convo in convo_dirs:
-    convo_info, messages = get_convo_info(convo)
+    convo_info = get_conversation(convo)
     subtotal = convo_info['number']
     name = convo_info['name']
+    msgs = convo_info['messages']
 
     total += subtotal
-    current_percent.append(convo_info)
+    current_percent.append({'number': subtotal, 'name': name})
 
-    daily_msgs = get_msgs_day_convo(messages)
+    msgs_by_day = get_msgs_by_day(msgs)
 
-    msgs_per_day.append({
+    conversations[convo] = {
         'name': name,
-        'messages': daily_msgs
-    })
-
-    individual_msgs[convo] = {
-        'name': name,
-        'per_day': daily_msgs,
+        'per_day': msgs_by_day,
         'total': subtotal
     }
 
-    names.append(name)
-
-find_current_percentage(current_percent)
-per_increment, msgs_per, percent_per = find_per_info(msgs_per_day, names)
+info = find_per_info(conversations)
+increment, msgs_per, total_per_day = find_per_info(conversations)
 
 content = {
     'collective': {
         'total': total,
-        'current_percent': current_percent,
+        'current_percent': find_current_percentage(current_percent, total),
         'msgs_per': {
             'data': msgs_per,
-            'increment': per_increment
-        }
+            'increment': increment
+        },
+        'total_per_day': total_per_day
     },
     'individual': {
-        'info': individual_msgs
+        'info': conversations
     }
-    # 'percent_per_day': percent_per_day,
 }
 
 writefile = f"{fp}/data.json"
