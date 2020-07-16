@@ -5,9 +5,12 @@ let getISOString = (date) => {
 
 let isoToDate = string => new Date(`${string}T12:00:00`);
 
-
 let fillSpan = (id, text) => {
     document.getElementById(id).innerHTML = text;
+}
+
+let setWeight = (id, weight) => {
+    document.getElementById(id).style.fontWeight = weight;
 }
 
 function legend(
@@ -102,4 +105,4 @@ function wrap(text, width) {
     });
 }
 
-export { getISOString, isoToDate, legend, fillSpan, delay }
+export { getISOString, isoToDate, legend, fillSpan, delay, setWeight }

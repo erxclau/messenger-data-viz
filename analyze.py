@@ -9,17 +9,26 @@ def strtodate(string):
     return datetime.strptime(string, '%Y-%m-%d')
 
 
+def find_percentage_by_day(data, totals):
+    for c_id in data.keys():
+        convo = data[c_id]
+        convo['percent_per_day'] = dict()
+        for date in convo['msgs_per_day'].keys():
+            percent = convo['msgs_per_day'][date] / totals[date] * 100
+            convo['percent_per_day'][date] = percent
+
+
 def find_per_info(data):
     increment = 'daily'
     stack_msgs_by_day = dict()
     total_by_day = dict()
 
-    names = { key : data[key]['name'] for key in data.keys() }
+    names = {key: data[key]['name'] for key in data.keys()}
 
     convo_ids = data.keys()
     for c_id in convo_ids:
 
-        msgs = data[c_id]['per_day']
+        msgs = data[c_id]['msgs_per_day']
         for date in msgs.keys():
             if not date in stack_msgs_by_day:
                 stack_msgs_by_day[date] = dict()
@@ -49,7 +58,6 @@ def find_per_info(data):
             stack_msgs_by_day[string] = dict()
             for id in convo_ids:
                 stack_msgs_by_day[string][id] = 0
-            total_by_day[string] = 0
             keys.insert(i+j+1, string)
         length = len(keys) - 1
         i += distance
@@ -83,7 +91,7 @@ def find_per_info(data):
     for date in sorted(stack_msgs_by_day.keys()):
 
         count_val = stack_msgs_by_day[date]
-        count_val = { names[key] : count_val[key] for key in count_val}
+        count_val = {names[key]: count_val[key] for key in count_val}
         count_val['date'] = date
 
         msg_list.append(count_val)
@@ -152,26 +160,24 @@ for convo in convo_dirs:
     total += subtotal
     current_percent.append({'number': subtotal, 'name': name})
 
-    msgs_by_day = get_msgs_by_day(msgs)
-
     conversations[convo] = {
         'name': name,
-        'per_day': msgs_by_day,
+        'msgs_per_day': get_msgs_by_day(msgs),
         'total': subtotal
     }
 
-info = find_per_info(conversations)
 increment, msgs_per, total_per_day = find_per_info(conversations)
+find_percentage_by_day(conversations, total_per_day)
+current_percent = find_current_percentage(current_percent, total)
 
 content = {
     'collective': {
         'total': total,
-        'current_percent': find_current_percentage(current_percent, total),
+        'current_percent': current_percent,
         'msgs_per': {
             'data': msgs_per,
             'increment': increment
         },
-        'total_per_day': total_per_day
     },
     'individual': {
         'info': conversations

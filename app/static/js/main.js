@@ -1,8 +1,7 @@
 import { createArc } from './svg/arc.js';
 import { createStackArea } from './svg/stack.js';
 import { createCalendar, addData } from './svg/calendar.js';
-import { getISOString, isoToDate, fillSpan } from './utility.js';
-
+import { getISOString, isoToDate, fillSpan, setWeight } from './utility.js';
 
 window.onload = async () => {
     let data = await d3.json('/data');
@@ -60,7 +59,7 @@ window.onload = async () => {
                 let percentage = formatNum((subtotal / total * 100).toPrecision(4))
                 fillSpan('subpercent', `That makes up ${percentage}% of your total messages across all conversations.`);
 
-                let messages = createYearArray(convo_data['per_day']);
+                let messages = createYearArray(convo_data['msgs_per_day']);
 
                 let cur = 'Recent';
                 let calendar = createCalendar(calendar_id, cellSize);
@@ -106,10 +105,6 @@ window.onload = async () => {
     }
 }
 
-let setWeight = (id, weight) => {
-    document.getElementById(id).style.fontWeight = weight;
-}
-
 let createYearArray = (data) => {
     let now = new Date();
     let start = new Date();
@@ -122,8 +117,6 @@ let createYearArray = (data) => {
 let fillData = (data, start, end, novalue) => {
 
     let beginning = isoToDate(`${d3.min(Object.keys(data)).substr(0, 4)}-01-01`);
-
-    console.log(beginning, start);
 
     let years = { 'Recent': new Array() };
     let starts = { 'Recent': start };
