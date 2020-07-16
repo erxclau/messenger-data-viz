@@ -23,17 +23,6 @@ def data():
     return df
 
 
-@app.route('/view/<id>')
-def individual_view(id):
-    return render_template('individual.html')
-
-
-@app.route('/data/<id>')
-def individual_data(id):
-    f = json.loads(df)
-    return f['individual']['info'][id]
-
-
 if __name__ == "__main__":
     app.debug = True
     app.run()

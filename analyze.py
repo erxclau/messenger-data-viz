@@ -169,7 +169,7 @@ for convo in convo_dirs:
     individual_msgs[convo] = {
         'name': name,
         'per_day': daily_msgs,
-        # 'total': subtotal
+        'total': subtotal
     }
 
     names.append(name)

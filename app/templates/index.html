@@ -8,6 +8,7 @@
 
         <style>
             @import url("{{ url_for('static', filename='css/main.css') }}");
+            @import url("{{ url_for('static', filename='css/individual.css') }}");
         </style>
     </head>
 
@@ -37,13 +38,20 @@
             </p>
             <div id="messages-per"></div>
         </div>
-        <div style="padding: 0.5rem;">
-            <div class="conversation-container">
-                <div style="min-height: calc(5vh - 0.5rem); padding-bottom: 0.5rem;">
+        <div style="padding: 0.5rem; display: flex; flex-direction: row;">
+            <div class="sidebar">
+                <div class="header">
                     Click on the names below to view visualizations for that conversation.
                 </div>
-                <div style="height: calc(95vh - 1rem); overflow-y: scroll;" id="individual-conversations">
+                <div id="conversations-container">
                 </div>
+            </div>
+            <div id="graphic">
+                <div style="font-weight: bold;" id="name"></div>
+                <div id="subtotal"></div>
+                <div id="subpercent" style="margin-bottom: 0.25rem;"></div>
+                <div id="year-container" style="padding-bottom: 0.25rem;"></div>
+                <div id='message-calendar-container'></div>
             </div>
         </div>
         <script src="https://d3js.org/d3.v5.min.js" charset="utf-8"></script>

@@ -70,7 +70,9 @@ let addData = (calendar, id, data, start, cellSize, tooltip, colors, legendDesc)
 
 let initializeCalendarSVG = (width, height, cellSize, id) => {
 
-    const svg = d3.select(`#${id}`)
+    d3.select(`#${id} svg`).remove();
+
+    let svg = d3.select(`#${id}`)
         .append('svg')
         .attr('id', `${id}-calendar-svg`)
         .attr('viewBox', [0, 0, width, height])
