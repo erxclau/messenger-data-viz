@@ -21,6 +21,6 @@ window.onload = async () => {
     let individuals = document.getElementById('individual-conversations');
     let convos = data['individual']['info'];
     for (const convo in convos) {
-        individuals.innerHTML += `<p><a href="/view/${convo}">${convos[convo]['name']}</a></p>`
+        individuals.innerHTML += `<div class='conversation'><a href="/view/${convo}">${convos[convo]['name']}</a></div>`
     }
 }

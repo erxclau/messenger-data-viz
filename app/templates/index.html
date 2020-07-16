@@ -16,7 +16,7 @@
             <h1>messenger-data-viz</h1>
             <p><b>by Eric Lau</b></p>
             <hr>
-            <p id="description">
+            <p class="description">
                 Visualize your Facebook Messenger conversations.
             </p>
             <hr>
@@ -26,21 +26,25 @@
                 Across all of your converastions, there have been <span id="total-messages"></span> messages sent.
             </p>
             <p>
-                Which conversations make up most of these messages? Below, see which conversations are the most active.
-                Conversations that make up less than 1.5 percent of your total have been grouped as "Other". Hover over
-                each section to see the number of messages sent in that conversation.
+                Below, you can see which conversations make up the most of that total amount. Conversations that make up
+                less than 1.5 percent of your total have been grouped as "Other". Hover over each section to see the
+                number of messages sent in that conversation.
             </p>
             <div id="current-percent"></div>
-            <!-- <div id="percent-per-day"></div> -->
             <p>
-                In the following, you can see all of your messages on a <span id="increment"></span> basis. Hover over
-                each colored section to see the conversation associated.
+                In the following graph, you can see all of your conversations on a <span id="increment"></span> basis.
+                Hover over each colored section to see the conversation associated.
             </p>
             <div id="messages-per"></div>
-            <p>
-                View visualizations for all of your individual conversations.
-            <div id="individual-conversations"></div>
-            </p>
+        </div>
+        <div style="padding: 0.5rem;">
+            <div class="conversation-container">
+                <div style="min-height: calc(5vh - 0.5rem); padding-bottom: 0.5rem;">
+                    Click on the names below to view visualizations for that conversation.
+                </div>
+                <div style="height: calc(95vh - 1rem); overflow-y: scroll;" id="individual-conversations">
+                </div>
+            </div>
         </div>
         <script src="https://d3js.org/d3.v5.min.js" charset="utf-8"></script>
         <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
