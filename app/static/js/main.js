@@ -1,6 +1,6 @@
 import { createArc } from './svg/arc.js';
 import { createStackArea } from './svg/stack.js';
-import { createCalendar, addData } from './svg/calendar.js';
+import Calendar from './svg/calendar.js';
 import { getISOString, isoToDate, fillSpan, setWeight } from './utility.js';
 
 window.onload = async () => {
@@ -32,7 +32,6 @@ window.onload = async () => {
     let colors = d3.schemeBlues[ncolors];
     colors.shift();
 
-    let cellSize = 16;
     let calendar_id = 'message-calendar-container';
 
     for (const convo in convos) {
@@ -62,14 +61,12 @@ window.onload = async () => {
                 let messages = createYearArray(convo_data['msgs_per_day']);
 
                 let cur = 'Recent';
-                let calendar = createCalendar(calendar_id, cellSize);
+                let calendar = new Calendar(calendar_id, colors);
 
-                addData(
-                    calendar, calendar_id,
+                calendar.addData(
                     messages['data'][cur],
                     messages['start'][cur],
-                    cellSize, tooltip,
-                    colors, legendDesc
+                    tooltip, legendDesc
                 );
 
                 let years = Object.keys(messages['start']);
@@ -86,12 +83,10 @@ window.onload = async () => {
                             cur = this.textContent;
                             setWeight(`year-${cur}`, 'bold');
 
-                            addData(
-                                calendar, calendar_id,
+                            calendar.addData(
                                 messages['data'][cur],
                                 messages['start'][cur],
-                                cellSize, tooltip,
-                                colors, legendDesc,
+                                tooltip, legendDesc
                             )
                         }
                     })
@@ -131,7 +126,7 @@ let fillData = (data, start, end, novalue) => {
     }
 
     beginning = (start < tmp)
-        ? isoToDate(`${getISOString(start).substr(0,4)}-01-01`)
+        ? isoToDate(`${getISOString(start).substr(0, 4)}-01-01`)
         : tmp
 
     for (let i = beginning; i <= end; i.setDate(i.getDate() + 1)) {
