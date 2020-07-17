@@ -5,6 +5,10 @@ from pprint import pprint
 from datetime import datetime, timedelta
 
 
+fp = os.path.dirname(os.path.abspath(__file__))
+inbox = f"{fp}/messages/inbox"
+
+
 def strtodate(string):
     return datetime.strptime(string, '%Y-%m-%d')
 
@@ -121,13 +125,12 @@ def find_current_percentage(data, total):
 
 
 def get_conversation(convo):
-    tmp = dict()
-    tmp['number'] = 0
-    tmp['messages'] = list()
+    tmp = {'number': 0, 'messages': list()}
     msg_files = [f.name for f in os.scandir(f"{inbox}/{convo}") if f.is_file()]
     for msg_file in msg_files:
-        f = open(f"{inbox}/{convo}/{msg_file}")
-        f = json.load(f)
+        fi = open(f"{inbox}/{convo}/{msg_file}")
+        f = json.load(fi)
+        fi.close()
 
         if not 'name' in tmp:
             title = f['title'].encode('latin-1').decode('utf-8')
@@ -140,53 +143,66 @@ def get_conversation(convo):
     return tmp
 
 
-start = time.time()
+def aggregate_data():
 
-fp = os.path.dirname(os.path.abspath(__file__))
-inbox = f"{fp}/messages/inbox"
+    convo_dirs = [f.name for f in os.scandir(inbox)]
 
-convo_dirs = [f.name for f in os.scandir(inbox)]
+    current_percent = list()
+    conversations = dict()
+    total = 0
 
-current_percent = list()
-conversations = dict()
-total = 0
+    for convo in convo_dirs:
+        convo_info = get_conversation(convo)
+        subtotal = convo_info['number']
+        name = convo_info['name']
+        msgs = convo_info['messages']
 
-for convo in convo_dirs:
-    convo_info = get_conversation(convo)
-    subtotal = convo_info['number']
-    name = convo_info['name']
-    msgs = convo_info['messages']
+        total += subtotal
+        current_percent.append({'number': subtotal, 'name': name})
 
-    total += subtotal
-    current_percent.append({'number': subtotal, 'name': name})
+        conversations[convo] = {
+            'name': name,
+            'msgs_per_day': get_msgs_by_day(msgs),
+            'total': subtotal
+        }
 
-    conversations[convo] = {
-        'name': name,
-        'msgs_per_day': get_msgs_by_day(msgs),
-        'total': subtotal
-    }
+    return current_percent, conversations, total
 
-increment, msgs_per, total_per_day = find_per_info(conversations)
-find_percentage_by_day(conversations, total_per_day)
-current_percent = find_current_percentage(current_percent, total)
 
-content = {
-    'collective': {
-        'total': total,
-        'current_percent': current_percent,
-        'msgs_per': {
-            'data': msgs_per,
-            'increment': increment
+def create_data_dump(data):
+
+    current_percent, conversations, total = data
+
+    increment, msgs_per, total_per_day = find_per_info(conversations)
+    find_percentage_by_day(conversations, total_per_day)
+    current_percent = find_current_percentage(current_percent, total)
+
+    content = {
+        'collective': {
+            'total': total,
+            'current_percent': current_percent,
+            'msgs_per': {
+                'data': msgs_per,
+                'increment': increment
+            },
         },
-    },
-    'individual': {
-        'info': conversations
+        'individual': {
+            'info': conversations
+        }
     }
-}
 
-writefile = f"{fp}/data.json"
+    return content
 
-with open(writefile, 'w', encoding='utf-8') as file:
-    json.dump(content, file, ensure_ascii=False, indent=2)
 
-print(time.time() - start)
+if __name__ == "__main__":
+    start = time.time()
+
+    writefile = f"{fp}/data.json"
+
+    data = aggregate_data()
+    content = create_data_dump(data)
+
+    with open(writefile, 'w', encoding='utf-8') as file:
+        json.dump(content, file, ensure_ascii=False, indent=2)
+
+    print(time.time() - start)

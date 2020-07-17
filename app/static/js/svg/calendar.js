@@ -4,7 +4,7 @@ export default class Calendar {
     constructor(id, colors) {
         this.cellSize = 16;
         this.width = 954;
-        this.height = cellSize * 11;
+        this.height = this.cellSize * 11;
         this.months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
         this.countDay = d => d.getUTCDay();
@@ -78,7 +78,7 @@ export default class Calendar {
             .attr('id', d => getISOString(d.date))
             .attr('x', d =>
                 (this.timeWeek.count(d3.utcYear(start), d.date) - startOffset) * this.cellSize + 0.5)
-            .attr('y', d => countDay(d.date) * this.cellSize + 0.5)
+            .attr('y', d => this.countDay(d.date) * this.cellSize + 0.5)
             .attr('fill', d => d.value == 0 ? '#F8F8FD' : colorMapper(d.value))
 
         this.calendar.selectAll('.title-label').remove();
@@ -115,7 +115,7 @@ export default class Calendar {
             let rect = document.getElementById(getISOString(i));
 
             if (rect != null) {
-                calendar.append('text')
+                this.calendar.append('text')
                     .datum(this.months[i.getMonth()])
                     .attr('x', rect.getAttribute('x'))
                     .attr('class', 'month-marks')

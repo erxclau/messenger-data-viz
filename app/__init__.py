@@ -15,10 +15,11 @@ def root():
 
 @app.route('/data')
 def data():
-    fp = os.path.dirname(os.path.abspath(__file__))
-    df = open(f"{fp}/../data.json", encoding='latin-1')
-    df = df.read().encode('latin-1').decode('utf-8')
-    return df
+    filepath = os.path.dirname(os.path.abspath(__file__))
+    f = open(f"{filepath}/../data.json", encoding='latin-1')
+    datajson = f.read().encode('latin-1').decode('utf-8')
+    f.close()
+    return datajson
 
 
 if __name__ == "__main__":
