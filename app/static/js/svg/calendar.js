@@ -60,10 +60,15 @@ export default class Calendar {
     }
 
     addData(data, start, tooltip, legendDesc) {
-        let colorMapper = d3.scaleQuantize()
-            .domain([0, d3.max(data, d => d.value) * 0.7])
-            .range(this.colors)
-            .nice();
+        let colorMapper = legendDesc == 'Percentage'
+            ? d3.scaleQuantize()
+                .domain([0, 100])
+                .range(this.colors)
+                .nice()
+            : d3.scaleQuantize()
+                .domain([0, d3.max(data, d => d.value) * 0.7])
+                .range(this.colors)
+                .nice()
 
         let startOffset = this.timeWeek.count(d3.utcYear(start), start);
 

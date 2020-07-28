@@ -5,6 +5,7 @@ import { getISOString, isoToDate, fillSpan, setWeight } from './utility.js';
 
 window.onload = async () => {
     let data = await d3.json('/data');
+
     console.log(data);
 
     let formatNum = d3.format(',');
@@ -59,17 +60,21 @@ window.onload = async () => {
                 fillSpan('subpercent', `That makes up ${percentage}% of your total messages across all conversations.`);
 
                 let messages = createYearArray(convo_data['msgs_per_day']);
+                let percentages = createYearArray(convo_data['percent_per_day']);
 
-                let cur = 'Recent';
+                let toggle = messages;
+
+                let curYear = 'Recent';
+                let curToggle = 'Messages';
                 let calendar = new Calendar(calendar_id, colors);
 
                 calendar.addData(
-                    messages['data'][cur],
-                    messages['start'][cur],
+                    toggle['data'][curYear],
+                    toggle['start'][curYear],
                     tooltip, legendDesc
                 );
 
-                let years = Object.keys(messages['start']);
+                let years = Object.keys(toggle['start']);
                 let yearContainer = document.getElementById('year-container');
                 yearContainer.textContent = '';
 
@@ -78,14 +83,14 @@ window.onload = async () => {
                     e.id = `year-${year}`;
                     e.textContent = year;
                     e.addEventListener('click', function () {
-                        if (this.textContent != cur) {
-                            setWeight(`year-${cur}`, 400);
-                            cur = this.textContent;
-                            setWeight(`year-${cur}`, 'bold');
+                        if (this.textContent != curYear) {
+                            setWeight(`year-${curYear}`, 400);
+                            curYear = this.textContent;
+                            setWeight(`year-${curYear}`, 'bold');
 
                             calendar.addData(
-                                messages['data'][cur],
-                                messages['start'][cur],
+                                toggle['data'][curYear],
+                                toggle['start'][curYear],
                                 tooltip, legendDesc
                             )
                         }
@@ -93,7 +98,42 @@ window.onload = async () => {
                     yearContainer.appendChild(e);
                 });
 
-                setWeight(`year-${cur}`, 'bold');
+                setWeight(`year-${curYear}`, 'bold');
+
+                let toggleContainer = document.getElementById('calendar-toggle');
+                toggleContainer.textContent = '';
+
+                ['Messages', 'Percentage'].forEach(type => {
+                    let e = document.createElement('small');
+                    e.id = `type-${type}`;
+                    e.textContent = type;
+                    e.addEventListener('click', function () {
+                        if (this.textContent != curToggle) {
+                            setWeight(`type-${curToggle}`, 400);
+                            curToggle = this.textContent;
+                            setWeight(`type-${curToggle}`, 'bold');
+
+                            tooltip = type == 'Messages'
+                                ? d => `${d.value} messages on ${d.date.toDateString()}`
+                                : d => `${d.value.toPrecision(3)}% on ${d.date.toDateString()}`
+
+                            legendDesc = type == 'Messages'
+                                ? 'Number of messages'
+                                : 'Percentage';
+
+                            toggle = type == 'Messages' ? messages : percentages;
+
+                            calendar.addData(
+                                toggle['data'][curYear],
+                                toggle['start'][curYear],
+                                tooltip, legendDesc
+                            )
+                        }
+                    })
+                    toggleContainer.appendChild(e);
+                })
+
+                setWeight(`type-${curToggle}`, 'bold');
             }
         })
         conversations.appendChild(el);
