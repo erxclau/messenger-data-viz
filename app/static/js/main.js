@@ -6,8 +6,6 @@ import { getISOString, isoToDate, fillSpan, setWeight } from './utility.js';
 window.onload = async () => {
     let data = await d3.json('/data');
 
-    console.log(data);
-
     let formatNum = d3.format(',');
 
     let collective = data['collective'];
@@ -24,7 +22,7 @@ window.onload = async () => {
 
     let conversations = document.getElementById('conversations-container');
     let convos = individual['info'];
-    let current;
+    let currentConvo;
 
     let tooltip = d => `${d.value} messages on ${d.date.toDateString()}`;
     let ncolors = 8;
@@ -43,12 +41,12 @@ window.onload = async () => {
         el.id = convo;
         el.addEventListener('click', function () {
             let convo_data = convos[this.id];
-            if (this.id != current) {
-                if (current) {
-                    document.getElementById(current).style.backgroundColor = 'transparent';
+            if (this.id != currentConvo) {
+                if (currentConvo) {
+                    document.getElementById(currentConvo).style.backgroundColor = 'transparent';
                 }
 
-                current = this.id;
+                currentConvo = this.id;
                 this.style.backgroundColor = 'lightgray';
 
                 fillSpan('name', name);
@@ -62,19 +60,19 @@ window.onload = async () => {
                 let messages = createYearArray(convo_data['msgs_per_day']);
                 let percentages = createYearArray(convo_data['percent_per_day']);
 
-                let toggle = messages;
+                let currentData = messages;
 
-                let curYear = 'Recent';
-                let curToggle = 'Messages';
+                let currentYear = 'Recent';
+                let currentView = 'Messages';
                 let calendar = new Calendar(calendar_id, colors);
 
                 calendar.addData(
-                    toggle['data'][curYear],
-                    toggle['start'][curYear],
+                    currentData['data'][currentYear],
+                    currentData['start'][currentYear],
                     tooltip, legendDesc
                 );
 
-                let years = Object.keys(toggle['start']);
+                let years = Object.keys(currentData['start']);
                 let yearContainer = document.getElementById('year-container');
                 yearContainer.textContent = '';
 
@@ -83,14 +81,14 @@ window.onload = async () => {
                     e.id = `year-${year}`;
                     e.textContent = year;
                     e.addEventListener('click', function () {
-                        if (this.textContent != curYear) {
-                            setWeight(`year-${curYear}`, 400);
-                            curYear = this.textContent;
-                            setWeight(`year-${curYear}`, 'bold');
+                        if (this.textContent != currentYear) {
+                            setWeight(`year-${currentYear}`, 400);
+                            currentYear = this.textContent;
+                            setWeight(`year-${currentYear}`, 'bold');
 
                             calendar.addData(
-                                toggle['data'][curYear],
-                                toggle['start'][curYear],
+                                currentData['data'][currentYear],
+                                currentData['start'][currentYear],
                                 tooltip, legendDesc
                             )
                         }
@@ -98,7 +96,7 @@ window.onload = async () => {
                     yearContainer.appendChild(e);
                 });
 
-                setWeight(`year-${curYear}`, 'bold');
+                setWeight(`year-${currentYear}`, 'bold');
 
                 let toggleContainer = document.getElementById('calendar-toggle');
                 toggleContainer.textContent = '';
@@ -108,24 +106,22 @@ window.onload = async () => {
                     e.id = `type-${type}`;
                     e.textContent = type;
                     e.addEventListener('click', function () {
-                        if (this.textContent != curToggle) {
-                            setWeight(`type-${curToggle}`, 400);
-                            curToggle = this.textContent;
-                            setWeight(`type-${curToggle}`, 'bold');
+                        if (this.textContent != currentView) {
+                            setWeight(`type-${currentView}`, 400);
+                            currentView = this.textContent;
+                            setWeight(`type-${currentView}`, 'bold');
 
                             tooltip = type == 'Messages'
                                 ? d => `${d.value} messages on ${d.date.toDateString()}`
                                 : d => `${d.value.toPrecision(3)}% on ${d.date.toDateString()}`
 
-                            legendDesc = type == 'Messages'
-                                ? 'Number of messages'
-                                : 'Percentage';
+                            legendDesc = type == 'Messages' ? 'Number of messages' : 'Percentage';
 
-                            toggle = type == 'Messages' ? messages : percentages;
+                            currentData = type == 'Messages' ? messages : percentages;
 
                             calendar.addData(
-                                toggle['data'][curYear],
-                                toggle['start'][curYear],
+                                currentData['data'][currentYear],
+                                currentData['start'][currentYear],
                                 tooltip, legendDesc
                             )
                         }
@@ -133,7 +129,7 @@ window.onload = async () => {
                     toggleContainer.appendChild(e);
                 })
 
-                setWeight(`type-${curToggle}`, 'bold');
+                setWeight(`type-${currentView}`, 'bold');
             }
         })
         conversations.appendChild(el);
