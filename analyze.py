@@ -103,18 +103,32 @@ def find_per_info(data):
     return increment, msg_list, total_by_day
 
 
-def get_msgs_by_day(messages):
-    tmp = dict()
+def get_msgs_by_time(messages):
+    msgDateMap = dict()
+
+    msgMinuteList = list()
+    for i in range(24):
+        msgMinuteList.append(list())
+        for j in range(60):
+            msgMinuteList[i].append(0)
+
     for msg in messages:
         t = int(msg['timestamp_ms']) / 1000
         date = datetime.fromtimestamp(t)
         iso = date.isoformat()[:10]
 
-        if not iso in tmp:
-            tmp[iso] = 1
+        if not iso in msgDateMap:
+            msgDateMap[iso] = 1
         else:
-            tmp[iso] += 1
-    return tmp
+            msgDateMap[iso] += 1
+
+        msgMinuteList[date.hour][date.minute] += 1
+
+    msgs_by_minute = list()
+    for data in msgMinuteList:
+        msgs_by_minute.extend(data)
+
+    return msgDateMap, msgs_by_minute
 
 
 def find_current_percentage(data, total):
@@ -160,9 +174,11 @@ def aggregate_data():
         total += subtotal
         current_percent.append({'number': subtotal, 'name': name})
 
+        msgs_by_day, msgs_by_minute = get_msgs_by_time(msgs)
         conversations[convo] = {
             'name': name,
-            'msgs_per_day': get_msgs_by_day(msgs),
+            'msgs_per_day': msgs_by_day,
+            'msgs_per_minute': msgs_by_minute,
             'total': subtotal
         }
 
