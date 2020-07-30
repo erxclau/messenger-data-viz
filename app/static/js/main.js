@@ -1,5 +1,6 @@
 import { createArc } from './svg/arc.js';
 import { createStackArea } from './svg/stack.js';
+import { createDayLine } from './svg/line/day.js';
 import Calendar from './svg/calendar.js';
 import { getISOString, isoToDate, fillSpan, setWeight } from './utility.js';
 
@@ -7,6 +8,8 @@ window.onload = async () => {
     let data = await d3.json('/data');
 
     let formatNum = d3.format(',');
+
+    console.log(data);
 
     let collective = data['collective'];
     let individual = data['individual'];
@@ -130,6 +133,8 @@ window.onload = async () => {
                 })
 
                 setWeight(`type-${currentView}`, 'bold');
+
+                createDayLine(convo_data['msgs_per_minute'], 'minute-line-container')
             }
         })
         conversations.appendChild(el);
