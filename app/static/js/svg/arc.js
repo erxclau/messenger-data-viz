@@ -8,12 +8,15 @@ let createArc = (id, data) => {
             i--;
         }
     }
-    data.push(other);
+    if (other['number'] > 0 && other['percent'] > 0) {
+        data.push(other);
+    }
 
     let colorScale = d3.scaleOrdinal()
         .domain(data.map(({name}) => name))
         .range(d3.schemePastel1)
 
+    d3.select(`#${id} svg`).remove();
     let svg = d3.select(`#${id}`)
         .append('svg')
         .attr('id', `${id}-svg`)

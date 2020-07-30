@@ -170,7 +170,7 @@ def get_msg_split(messages):
         split_list.append({
             'name': name.encode('latin-1').decode('utf-8'),
             'number': len(split_dict[name]),
-            'value': len(split_dict[name]) / len(messages) * 100
+            'percent': len(split_dict[name]) / len(messages) * 100
         })
     return split_list
 

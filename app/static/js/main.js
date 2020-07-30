@@ -134,7 +134,9 @@ window.onload = async () => {
 
                 setWeight(`type-${currentView}`, 'bold');
 
-                createDayLine(convo_data['msgs_per_minute'], 'minute-line-container')
+                createDayLine(convo_data['msgs_per_minute'], 'minute-line-container');
+
+                createArc('message-split-arc', convo_data['split'])
             }
         })
         conversations.appendChild(el);
