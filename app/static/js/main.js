@@ -27,7 +27,7 @@ window.onload = async () => {
     let convos = individual['info'];
     let currentConvo;
 
-    let tooltip = d => `${d.value} messages on ${d.date.toDateString()}`;
+    let tooltip;
     let ncolors = 8;
     let legendDesc = 'Number of messages';
 
@@ -68,6 +68,8 @@ window.onload = async () => {
                 let currentYear = 'Recent';
                 let currentView = 'Messages';
                 let calendar = new Calendar(calendar_id, colors);
+
+                tooltip = d => `${d.value} messages on ${d.date.toDateString()}`;
 
                 calendar.addData(
                     currentData['data'][currentYear],
