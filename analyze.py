@@ -157,6 +157,24 @@ def get_conversation(convo):
     return tmp
 
 
+def get_msg_split(messages):
+    split_dict = dict()
+    for msg in messages:
+        name = msg['sender_name']
+        if name not in split_dict:
+            split_dict[name] = list()
+        split_dict[name].append(msg)
+
+    split_list = list()
+    for name in split_dict.keys():
+        split_list.append({
+            'name': name.encode('latin-1').decode('utf-8'),
+            'number': len(split_dict[name]),
+            'value': len(split_dict[name]) / len(messages) * 100
+        })
+    return split_list
+
+
 def aggregate_data():
 
     convo_dirs = [f.name for f in os.scandir(inbox)]
@@ -175,10 +193,14 @@ def aggregate_data():
         current_percent.append({'number': subtotal, 'name': name})
 
         msgs_by_day, msgs_by_minute = get_msgs_by_time(msgs)
+
+        msg_split = get_msg_split(msgs)
+
         conversations[convo] = {
             'name': name,
             'msgs_per_day': msgs_by_day,
             'msgs_per_minute': msgs_by_minute,
+            'split': msg_split,
             'total': subtotal
         }
 
