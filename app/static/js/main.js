@@ -30,7 +30,7 @@ window.onload = async () => {
 
     let tooltip;
     let ncolors = 8;
-    let legendDesc = 'Number of messages';
+    let legendDesc;
 
     let colors = d3.schemeBlues[ncolors];
     colors.shift();
@@ -71,6 +71,7 @@ window.onload = async () => {
                 let calendar = new Calendar(calendar_id, colors);
 
                 tooltip = d => `${d.value} messages on ${d.date.toDateString()}`;
+                legendDesc = 'Number of messages';
 
                 calendar.addData(
                     currentData['data'][currentYear],
