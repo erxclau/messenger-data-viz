@@ -16,6 +16,7 @@ fp = os.path.dirname(os.path.abspath(__file__))
 inbox = f"{fp}/messages/inbox"
 
 tokenizer = TweetTokenizer()
+sw = stopwords.words('english')
 
 
 def strtodate(string):
@@ -191,18 +192,62 @@ def get_total_tokens(content):
             text = text.replace('’', "'")
         tokens = tokenizer.tokenize(text)
         total_tokens.extend(tokens)
+
+    total_tokens = [
+        w for w in total_tokens
+        if w not in punctuation and
+        w not in sw and len(w) > 1]
+
     return total_tokens
+
+
+def get_emoji_analysis(content):
+    text = str()
+    for c in content:
+        text += c + ' '
+    emoji_dict = dict()
+    emoji_list = list()
+    count = 0
+    for word in regex.findall(r'\X', text):
+        if any(char in emoji.UNICODE_EMOJI for char in word):
+            count += 1
+            if not word in emoji_dict:
+                emoji_dict[word] = 1
+            else:
+                emoji_dict[word] += 1
+            emoji_list.append(word)
+    return emoji_dict, emoji_list, count
+
+
+def generate_count_list(tokens, limit):
+    vocab = nltk.FreqDist(tokens)
+    common = vocab.most_common(limit)
+    return [{'text': word[0], 'count': word[1]} for word in common]
 
 
 def get_lang_processing(messages):
     content = [d['content'].encode('latin-1').decode('utf-8')
                for d in messages if 'content' in d]
 
-    singlevocab = nltk.FreqDist(content)
+    emoji_dict, emoji_list, emoji_count = get_emoji_analysis(content)
+
+    standalone_vocab = nltk.FreqDist(content)
+    standalone_count = generate_count_list(standalone_vocab, 100)
 
     total_tokens = get_total_tokens(content)
-    total_tokens = [w for w in total_tokens if w not in punctuation]
-    sw = stopwords.words('english')
+    total_count = generate_count_list(total_tokens, 100)
+
+    return {
+        'emoji': {
+            'breakdown': emoji_dict,
+            'list': emoji_list,
+            'count': emoji_count
+        },
+        'text_count': {
+            'standalone': standalone_count,
+            'total': total_count
+        }
+    }
 
 
 def aggregate_data():
@@ -233,6 +278,8 @@ def aggregate_data():
             'msgs_per_day': msgs_by_day,
             'msgs_per_minute': msgs_by_minute,
             'split': msg_split,
+            'emoji': lang_processing['emoji'],
+            'text_count': lang_processing['text_count'],
             'total': subtotal
         }
 
@@ -273,6 +320,6 @@ if __name__ == "__main__":
     content = create_data_dump(data)
 
     with open(writefile, 'w', encoding='utf-8') as file:
-        json.dump(content, file, ensure_ascii=False, indent=2)
+        json.dump(content, file, ensure_ascii=False)
 
     print(time.time() - start)

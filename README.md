@@ -20,7 +20,7 @@ This repository contains code to analyze and visualize your Facebook Messenger c
 10. Click on the "Available Copies" tab to download your data. The folder will be called `facebook-<YOUR_USERNAME>` These copies expire four days after they are created.
 11. Extract the files from the downloaded zipped folder.
 
-For reference, when I downloaded around 8 years of data, I ended up with over 2 gigabytes of data. And I didn't extensively use Messenger for those 8 years.
+For reference, when I downloaded around 8 years of data, I ended up with over 2 gigabytes of data.
 
 ### Cloning the repository
 
@@ -77,6 +77,6 @@ python -m nltk.downloader stopwords
   - If there are conversations you do not want to analyze, move them out of `inbox` or delete them.
 - Run the following commands in your virtual environment
   - `python analyze.py`
-  <!-- - `python -m http.server 5000 --bind 127.0.0.1` -->
+  - This may take several seconds depending on how much data you have.
   - `python app/__init__.py` on Linux / macOS or `python app\__init__.py` on Windows.
 - Go to <http://127.0.0.1:5000/>.
