@@ -63,12 +63,6 @@ cd messenger-data-viz
 pip install -r requirements.txt
 ```
 
-- Install the corpora (i.e. collection of written texts) necessary to process natural language with NLTK by running the following:
-
-```shell
-python -m nltk.downloader stopwords
-```
-
 ### Using Your Data
 
 - Move the `messages` folder from `facebook-<YOUR_USERNAME>` into the root level of this repository.

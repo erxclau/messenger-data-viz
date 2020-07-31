@@ -5,16 +5,11 @@ from string import punctuation
 from datetime import datetime, timedelta
 
 import nltk
-from nltk.tokenize import TweetTokenizer
-from nltk.corpus import stopwords
 import emoji
 import regex
 
 fp = os.path.dirname(os.path.abspath(__file__))
 inbox = f"{fp}/messages/inbox"
-
-tokenizer = TweetTokenizer()
-sw = stopwords.words('english')
 
 
 def strtodate(string):
