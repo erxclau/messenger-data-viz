@@ -142,8 +142,8 @@ window.onload = async () => {
                 createArc('message-split-arc', convo_data['split']);
 
                 d3.select(`#bubble-graph svg`).remove();
-                if (convo_data['text_count']['standalone']['total'] > 0) {
-                    createBubbleGraph('bubble-graph', convo_data['text_count']['standalone']);
+                if (convo_data['text_count']['total'] > 0) {
+                    createBubbleGraph('bubble-graph', convo_data['text_count']);
                 }
             }
         })

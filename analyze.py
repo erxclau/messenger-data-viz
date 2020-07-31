@@ -1,11 +1,9 @@
 import os
 import time
 import json
-from pprint import pprint
 from string import punctuation
 from datetime import datetime, timedelta
 
-# from textblob import TextBlob
 import nltk
 from nltk.tokenize import TweetTokenizer
 from nltk.corpus import stopwords
@@ -185,22 +183,6 @@ def get_msg_split(messages):
     return split_list
 
 
-# def get_total_tokens(content):
-#     total_tokens = list()
-#     for text in content:
-#         if '’' in text:
-#             text = text.replace('’', "'")
-#         tokens = tokenizer.tokenize(text)
-#         total_tokens.extend(tokens)
-
-#     total_tokens = [
-#         w for w in total_tokens
-#         if w not in punctuation and
-#         w not in sw and len(w) > 1]
-
-#     return total_tokens
-
-
 def get_emoji_analysis(content):
     text = str()
     for c in content:
@@ -238,9 +220,6 @@ def get_lang_processing(messages):
     for text in standalone_count:
         standalone_total += text['count']
 
-    # total_tokens = get_total_tokens(content)
-    # total_count = generate_count_list(total_tokens, 100)
-
     return {
         'emoji': {
             'breakdown': emoji_dict,
@@ -248,16 +227,9 @@ def get_lang_processing(messages):
             'count': emoji_count
         },
         'text_count': {
-            'standalone': {
-                'count': standalone_count,
-                'total': standalone_total
-            },
+            'count': standalone_count,
+            'total': standalone_total
         },
-        # 'text_count': {
-        #     'standalone_count': standalone_count,
-        #     'standalone_total': standalone_total
-        #     # 'total': total_count
-        # }
     }
 
 
