@@ -1,6 +1,7 @@
 import { createArc } from './svg/arc.js';
 import { createStackArea } from './svg/stack.js';
 import { createDayLine } from './svg/line/day.js';
+import { createBubbleGraph } from './svg/bubble.js';
 import Calendar from './svg/calendar.js';
 import { getISOString, isoToDate, fillSpan, setWeight } from './utility.js';
 
@@ -138,7 +139,12 @@ window.onload = async () => {
 
                 createDayLine(convo_data['msgs_per_minute'], 'minute-line-container');
 
-                createArc('message-split-arc', convo_data['split'])
+                createArc('message-split-arc', convo_data['split']);
+
+                d3.select(`#bubble-graph svg`).remove();
+                if (convo_data['text_count']['standalone']['total'] > 0) {
+                    createBubbleGraph('bubble-graph', convo_data['text_count']['standalone']);
+                }
             }
         })
         conversations.appendChild(el);

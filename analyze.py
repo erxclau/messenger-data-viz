@@ -185,20 +185,20 @@ def get_msg_split(messages):
     return split_list
 
 
-def get_total_tokens(content):
-    total_tokens = list()
-    for text in content:
-        if '’' in text:
-            text = text.replace('’', "'")
-        tokens = tokenizer.tokenize(text)
-        total_tokens.extend(tokens)
+# def get_total_tokens(content):
+#     total_tokens = list()
+#     for text in content:
+#         if '’' in text:
+#             text = text.replace('’', "'")
+#         tokens = tokenizer.tokenize(text)
+#         total_tokens.extend(tokens)
 
-    total_tokens = [
-        w for w in total_tokens
-        if w not in punctuation and
-        w not in sw and len(w) > 1]
+#     total_tokens = [
+#         w for w in total_tokens
+#         if w not in punctuation and
+#         w not in sw and len(w) > 1]
 
-    return total_tokens
+#     return total_tokens
 
 
 def get_emoji_analysis(content):
@@ -222,7 +222,7 @@ def get_emoji_analysis(content):
 def generate_count_list(tokens, limit):
     vocab = nltk.FreqDist(tokens)
     common = vocab.most_common(limit)
-    return [{'text': word[0], 'count': word[1]} for word in common]
+    return [{'text': word[0], 'count': word[1]} for word in common if word[1] > 1]
 
 
 def get_lang_processing(messages):
@@ -234,8 +234,12 @@ def get_lang_processing(messages):
     standalone_vocab = nltk.FreqDist(content)
     standalone_count = generate_count_list(standalone_vocab, 100)
 
-    total_tokens = get_total_tokens(content)
-    total_count = generate_count_list(total_tokens, 100)
+    standalone_total = 0
+    for text in standalone_count:
+        standalone_total += text['count']
+
+    # total_tokens = get_total_tokens(content)
+    # total_count = generate_count_list(total_tokens, 100)
 
     return {
         'emoji': {
@@ -244,9 +248,16 @@ def get_lang_processing(messages):
             'count': emoji_count
         },
         'text_count': {
-            'standalone': standalone_count,
-            'total': total_count
-        }
+            'standalone': {
+                'count': standalone_count,
+                'total': standalone_total
+            },
+        },
+        # 'text_count': {
+        #     'standalone_count': standalone_count,
+        #     'standalone_total': standalone_total
+        #     # 'total': total_count
+        # }
     }
 
 
