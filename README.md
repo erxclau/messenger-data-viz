@@ -57,10 +57,16 @@ cd messenger-data-viz
 
 #### Installing Dependencies
 
-- Install necessary dependencies by running the following command in your virtual environment:
+- Install the necessary dependencies by running the following command in your virtual environment:
 
 ```shell
 pip install -r requirements.txt
+```
+
+- Install the corpora (i.e. collection of written texts) necessary to process natural language with NLTK by running the following:
+
+```shell
+python -m nltk.downloader stopwords
 ```
 
 ### Using Your Data

@@ -2,11 +2,20 @@ import os
 import time
 import json
 from pprint import pprint
+from string import punctuation
 from datetime import datetime, timedelta
 
+# from textblob import TextBlob
+import nltk
+from nltk.tokenize import TweetTokenizer
+from nltk.corpus import stopwords
+import emoji
+import regex
 
 fp = os.path.dirname(os.path.abspath(__file__))
 inbox = f"{fp}/messages/inbox"
+
+tokenizer = TweetTokenizer()
 
 
 def strtodate(string):
@@ -175,6 +184,27 @@ def get_msg_split(messages):
     return split_list
 
 
+def get_total_tokens(content):
+    total_tokens = list()
+    for text in content:
+        if '’' in text:
+            text = text.replace('’', "'")
+        tokens = tokenizer.tokenize(text)
+        total_tokens.extend(tokens)
+    return total_tokens
+
+
+def get_lang_processing(messages):
+    content = [d['content'].encode('latin-1').decode('utf-8')
+               for d in messages if 'content' in d]
+
+    singlevocab = nltk.FreqDist(content)
+
+    total_tokens = get_total_tokens(content)
+    total_tokens = [w for w in total_tokens if w not in punctuation]
+    sw = stopwords.words('english')
+
+
 def aggregate_data():
 
     convo_dirs = [f.name for f in os.scandir(inbox)]
@@ -195,6 +225,8 @@ def aggregate_data():
         msgs_by_day, msgs_by_minute = get_msgs_by_time(msgs)
 
         msg_split = get_msg_split(msgs)
+
+        lang_processing = get_lang_processing(msgs)
 
         conversations[convo] = {
             'name': name,
