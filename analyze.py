@@ -228,6 +228,25 @@ def get_lang_processing(messages):
     }
 
 
+def findStreak(dates):
+    maxdiff = timedelta(days=1)
+    streak = 1
+    start = end = dates[0]
+    for i in range(len(dates) - 1):
+        diff = dates[i+1] - dates[i]
+        if diff <= maxdiff:
+            streak += 1
+            end = dates[i+1]
+        else:
+            streak = 1
+            start = dates[i+1]
+    return {
+        'length': streak,
+        'start': start.isoformat()[:10],
+        'end': end.isoformat()[:10]
+    }
+
+
 def aggregate_data():
 
     convo_dirs = [f.name for f in os.scandir(inbox)]
@@ -249,6 +268,12 @@ def aggregate_data():
 
         msg_split = get_msg_split(msgs)
 
+        dates = list(msgs_by_day.keys())
+        dates = [strtodate(date) for date in dates]
+        dates.reverse()
+
+        streak_info = findStreak(dates)
+
         lang_processing = get_lang_processing(msgs)
 
         conversations[convo] = {
@@ -258,6 +283,7 @@ def aggregate_data():
             'split': msg_split,
             'emoji': lang_processing['emoji'],
             'text_count': lang_processing['text_count'],
+            'streak': streak_info,
             'total': subtotal
         }
 
