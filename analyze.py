@@ -202,9 +202,18 @@ def generate_count_list(tokens, limit):
     return [{'text': word[0], 'count': word[1]} for word in common if word[1] > 1]
 
 
+def get_text_length(content):
+    length = 0
+    for text in content:
+        length += len(text)
+    return length / len(content) if len(content) > 0 else 0
+
+
 def get_lang_processing(messages):
     content = [d['content'].encode('latin-1').decode('utf-8')
                for d in messages if 'content' in d]
+
+    text_length = get_text_length(content)
 
     emoji_dict, emoji_list, emoji_count = get_emoji_analysis(content)
 
@@ -225,6 +234,7 @@ def get_lang_processing(messages):
             'count': standalone_count,
             'total': standalone_total
         },
+        'text_length': text_length
     }
 
 
@@ -245,6 +255,12 @@ def findStreak(dates):
         'start': start.isoformat()[:10],
         'end': end.isoformat()[:10]
     }
+
+
+def get_max_day(msgs_per_day):
+    date = max(msgs_per_day, key=msgs_per_day.get)
+    value = msgs_per_day[date]
+    return {'date': date, 'value': value}
 
 
 def aggregate_data():
@@ -276,6 +292,8 @@ def aggregate_data():
 
         lang_processing = get_lang_processing(msgs)
 
+        max_msgs_in_day = get_max_day(msgs_by_day)
+
         conversations[convo] = {
             'name': name,
             'msgs_per_day': msgs_by_day,
@@ -283,7 +301,9 @@ def aggregate_data():
             'split': msg_split,
             'emoji': lang_processing['emoji'],
             'text_count': lang_processing['text_count'],
+            'text_length': lang_processing['text_length'],
             'streak': streak_info,
+            'max': max_msgs_in_day,
             'total': subtotal
         }
 
