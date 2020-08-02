@@ -3,7 +3,7 @@ import { createStackArea } from './svg/stack.js';
 import { createDayLine } from './svg/line/day.js';
 import { createBubbleGraph } from './svg/bubble.js';
 import Calendar from './svg/calendar.js';
-import { getISOString, isoToDate, fillSpan, setWeight } from './utility.js';
+import { fillSpan, setWeight, createYearArray } from './utility.js';
 
 window.onload = async () => {
     let data = await d3.json('/data');
@@ -150,67 +150,4 @@ window.onload = async () => {
         })
         conversations.appendChild(el);
     }
-}
-
-let createYearArray = (data) => {
-    let now = new Date();
-    let start = new Date();
-    start.setFullYear(now.getFullYear() - 1);
-
-    let res = fillData(data, start, now, 0);
-    return { 'data': res['data'], 'start': res['start'] };
-}
-
-let fillData = (data, start, end, novalue) => {
-
-    let beginning = isoToDate(`${d3.min(Object.keys(data)).substr(0, 4)}-01-01`);
-
-    let years = { 'Recent': new Array() };
-    let starts = { 'Recent': start };
-
-    let tmp = isoToDate(getISOString(beginning));
-
-    for (let i = beginning; i <= end; i.setFullYear(i.getFullYear() + 1)) {
-        let iso = getISOString(i);
-        let y = i.getFullYear();
-        years[`${y}`] = new Array();
-        starts[y] = isoToDate(iso);
-    }
-
-    beginning = (start < tmp)
-        ? isoToDate(`${getISOString(start).substr(0, 4)}-01-01`)
-        : tmp
-
-    for (let i = beginning; i <= end; i.setDate(i.getDate() + 1)) {
-        let iso = getISOString(i);
-        let time = isoToDate(iso);
-        let year = time.getFullYear();
-
-        let value = (iso in data) ? data[iso] : novalue;
-
-        let obj = { 'date': time, 'value': value };
-
-        if (`${year}` in years) {
-            years[`${year}`].push(obj);
-        }
-
-        if (time >= start && time <= end) {
-            years['Recent'].push(obj);
-        }
-    }
-
-    let curYear = new Date().getFullYear();
-    let cur = years[curYear];
-
-    let lastDateIso = getISOString(cur[cur.length - 1]['date']);
-    let lastDate = isoToDate(lastDateIso);
-    lastDate.setDate(lastDate.getDate() + 1);
-
-    for (let i = lastDate; lastDate.getFullYear() == curYear; i.setDate(i.getDate() + 1)) {
-        let iso = getISOString(i);
-        let time = isoToDate(iso);
-        years[curYear].push({ 'date': time, 'value': 0 });
-    }
-
-    return { 'data': years, 'start': starts };
 }
