@@ -3,7 +3,7 @@ import { createStackArea } from './svg/stack.js';
 import { createDayLine } from './svg/line/day.js';
 import { createBubbleGraph } from './svg/bubble.js';
 import Calendar from './svg/calendar.js';
-import { isoToDate, fillSpan, setWeight, createYearArray } from './utility.js';
+import { rasterize, isoToDate, fillSpan, setWeight, createYearArray } from './utility.js';
 
 window.onload = async () => {
     let data = await d3.json('/data');
@@ -44,7 +44,7 @@ window.onload = async () => {
         let name = convos[convo]['name']
         el.textContent = name;
         el.id = convo;
-        el.addEventListener('click', function () {
+        el.addEventListener('click', async function () {
             let convo_data = convos[this.id];
             if (this.id != currentConvo) {
                 if (currentConvo) {
@@ -88,6 +88,8 @@ window.onload = async () => {
 
                 tooltip = d => `${d.value} messages on ${d.date.toDateString()}`;
                 legendDesc = 'Number of messages';
+
+                // console.log(await rasterize(calendar.svg.node()));
 
                 calendar.addData(
                     currentData['data'][currentYear],
