@@ -240,20 +240,24 @@ def get_lang_processing(messages):
 
 def findStreak(dates):
     maxdiff = timedelta(days=1)
-    streak = 1
-    start = end = dates[0]
+    streak = longest_streak = 1
+    start = end = longest_start = longest_end = dates[0]
     for i in range(len(dates) - 1):
         diff = dates[i+1] - dates[i]
         if diff <= maxdiff:
             streak += 1
             end = dates[i+1]
+            if streak >= longest_streak:
+                longest_streak = streak
+                longest_start = start
+                longest_end = end
         else:
             streak = 1
             start = dates[i+1]
     return {
-        'length': streak,
-        'start': start.isoformat()[:10],
-        'end': end.isoformat()[:10]
+        'length': longest_streak,
+        'start': longest_start.isoformat()[:10],
+        'end': longest_end.isoformat()[:10]
     }
 
 
