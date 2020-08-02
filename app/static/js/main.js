@@ -72,6 +72,11 @@ window.onload = async () => {
 
                 fillSpan('streak', streakDisplay);
 
+                let maxDay = formatTime(isoToDate(convo_data['max']['date']))
+                fillSpan('max-day', `The day with the most texts sent was ${maxDay}. ${convo_data['max']['value']} messages were sent on that day`)
+
+                let textLength = convo_data['text_length'].toPrecision(3);
+                fillSpan('text-length', `The average message length of this conversation is ${textLength} characters.`)
                 let messages = createYearArray(convo_data['msgs_per_day']);
                 let percentages = createYearArray(convo_data['percent_per_day']);
 
