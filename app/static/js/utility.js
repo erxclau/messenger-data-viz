@@ -143,4 +143,4 @@ const delay = (time) => {
     });
 };
 
-export { getISOString, legend, fillSpan, setWeight, createYearArray }
+export { getISOString, isoToDate, legend, fillSpan, setWeight, createYearArray }

@@ -3,12 +3,13 @@ import { createStackArea } from './svg/stack.js';
 import { createDayLine } from './svg/line/day.js';
 import { createBubbleGraph } from './svg/bubble.js';
 import Calendar from './svg/calendar.js';
-import { fillSpan, setWeight, createYearArray } from './utility.js';
+import { isoToDate, fillSpan, setWeight, createYearArray } from './utility.js';
 
 window.onload = async () => {
     let data = await d3.json('/data');
 
     let formatNum = d3.format(',');
+    let formatTime = d3.timeFormat('%B %d %Y');
 
     console.log(data);
 
@@ -60,6 +61,16 @@ window.onload = async () => {
 
                 let percentage = formatNum((subtotal / total * 100).toPrecision(4))
                 fillSpan('subpercent', `That makes up ${percentage}% of your total messages across all conversations.`);
+
+                let streakStart = formatTime(isoToDate(convo_data['streak']['start']));
+                let streakEnd = formatTime(isoToDate(convo_data['streak']['end']));
+                let streakLen = convo_data['streak']['length'];
+
+                let streakDisplay = (streakLen > 1)
+                    ? `This conversation had its longest streak of texts from ${streakStart} to ${streakEnd}. That's ${streakLen} days!`
+                    : 'This conversation has not had a streak of texts longer than one day.';
+
+                fillSpan('streak', streakDisplay);
 
                 let messages = createYearArray(convo_data['msgs_per_day']);
                 let percentages = createYearArray(convo_data['percent_per_day']);
