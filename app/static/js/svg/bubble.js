@@ -1,3 +1,5 @@
+import { wrap } from '../utility.js';
+
 let createBubbleGraph = (id, data) => {
 
     let total = data['total'];
@@ -42,6 +44,7 @@ let createBubbleGraph = (id, data) => {
             .attr('dominant-baseline', 'middle')
             .attr('text-anchor', 'middle')
             .text(d => d.text)
+            .call(wrap, 300);
 
         u.exit().remove()
     }

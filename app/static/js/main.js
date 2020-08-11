@@ -89,8 +89,6 @@ window.onload = async () => {
                 tooltip = d => `${d.value} messages on ${d.date.toDateString()}`;
                 legendDesc = 'Number of messages';
 
-                // console.log(await rasterize(calendar.svg.node()));
-
                 calendar.addData(
                     currentData['data'][currentYear],
                     currentData['start'][currentYear],
