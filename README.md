@@ -4,6 +4,8 @@
 
 This repository contains code to analyze and visualize your Facebook Messenger conversations using various Python packages and D3.js.
 
+Inspired by the happiest of highs and the lowest of lows 🎢
+
 ## Instructions
 
 ### Getting Data From Facebook

@@ -281,6 +281,8 @@ def aggregate_data():
         name = convo_info['name']
         msgs = convo_info['messages']
 
+        print('Analyzing messages from', name)
+
         total += subtotal
         current_percent.append({'number': subtotal, 'name': name})
 
@@ -290,7 +292,7 @@ def aggregate_data():
 
         dates = list(msgs_by_day.keys())
         dates = [strtodate(date) for date in dates]
-        dates.reverse()
+        dates = sorted(dates)
 
         streak_info = findStreak(dates)
 
@@ -350,4 +352,4 @@ if __name__ == "__main__":
     with open(writefile, 'w', encoding='utf-8') as file:
         json.dump(content, file, ensure_ascii=False)
 
-    print(time.time() - start)
+    print(time.time() - start, "seconds")
