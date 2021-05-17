@@ -1,5 +1,6 @@
-# Python Virtual Environment
+# Python
 venv
+__pycache__
 
 # Facebook Messages
 messages*
@@ -9,3 +10,6 @@ data.json
 
 # Visual Studio Code
 .vscode
+
+# macOS
+.DS_STORE
