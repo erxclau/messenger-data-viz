@@ -4,7 +4,7 @@
 
 This repository contains code to analyze and visualize your Facebook Messenger conversations using various Python packages and D3.js.
 
-![Facebook Messenger data dashboard](https://raw.githubusercontent.com/ericlau00/ericlau00.github.io/master/img/projects/messenger-data-viz.gif)
+![Facebook Messenger data dashboard](https://raw.githubusercontent.com/erxclau/erxclau.github.io/master/img/projects/messenger-data-viz.gif)
 
 Inspired by the happiest of highs and the lowest of lows 🎢
 
@@ -31,7 +31,7 @@ For reference, when I downloaded around 8 years of data, I ended up with over 2 
 Run the following command in your terminal:
 
 ```shell
-git clone https://github.com/ericlau00/messenger-data-viz.git
+git clone https://github.com/erxclau/messenger-data-viz.git
 ```
 
 Alternatively, download the zip file for this repository which can be found by clicking on the green "Code" button at the top of the page.
