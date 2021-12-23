@@ -4,7 +4,7 @@
 
 This repository contains code to analyze and visualize your Facebook Messenger conversations using various Python packages and D3.js.
 
-![Facebook Messenger data dashboard](https://raw.githubusercontent.com/erxclau/erxclau.github.io/master/img/projects/messenger-data-viz.gif)
+![Facebook Messenger data dashboard](https://user-images.githubusercontent.com/44459660/147300111-ae2ecfc0-c7eb-4c9c-a902-44b58e031886.mp4)
 
 Inspired by the happiest of highs and the lowest of lows 🎢
 
