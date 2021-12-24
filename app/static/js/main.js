@@ -77,7 +77,7 @@ window.onload = async () => {
 
                 let textLength = convo_data['text_length'].toPrecision(3);
                 fillSpan('text-length', `The average message length of this conversation is ${textLength} characters.`)
-                let messages = createYearArray(convo_data['msgs_per_day']);
+                let messages = createYearArray(convo_data['msgs_by_date']);
                 let percentages = createYearArray(convo_data['percent_per_day']);
 
                 let currentData = messages;
@@ -154,7 +154,7 @@ window.onload = async () => {
 
                 setWeight(`type-${currentView}`, 'bold');
 
-                createDayLine(convo_data['msgs_per_minute'], 'minute-line-container');
+                createDayLine(convo_data['msgs_by_minute'], 'minute-line-container');
 
                 createArc('message-split-arc', convo_data['split']);
 

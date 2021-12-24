@@ -10,7 +10,7 @@ let createStackArea = (id, data, colorScale) => {
         .append('svg')
         .attr('id', `${id}-svg`)
         .attr('width', '100%')
-        .attr('height', '75vh');
+        .attr('height', '75%');
 
     let pseudo = svg._groups[0][0];
     let width = pseudo.clientWidth;

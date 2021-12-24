@@ -21,7 +21,7 @@ let createArc = (id, data) => {
         .append('svg')
         .attr('id', `${id}-svg`)
         .attr('width', '100%')
-        .attr('height', '50vh');
+        .attr('height', '50%');
 
     let pseudo = svg._groups[0][0];
     let width = pseudo.clientWidth;

@@ -1,8 +1,8 @@
 import os
-import time
-import json
-from string import punctuation
+from time import time
+from json import load, dump
 from datetime import datetime, timedelta
+from functools import reduce
 
 import nltk
 import emoji
@@ -12,22 +12,22 @@ fp = os.path.dirname(os.path.abspath(__file__))
 inbox = f"{fp}/messages/inbox"
 
 
-def strtodate(string):
-    return datetime.strptime(string, '%Y-%m-%d')
+def strtodate(string: str):
+    return datetime.fromisoformat(string)
 
 
 def find_percentage_by_day(data, totals):
     for c_id in data.keys():
         convo = data[c_id]
         convo['percent_per_day'] = dict()
-        for date in convo['msgs_per_day'].keys():
-            percent = convo['msgs_per_day'][date] / totals[date] * 100
+        for date in convo['msgs_by_date'].keys():
+            percent = convo['msgs_by_date'][date] / totals[date] * 100
             convo['percent_per_day'][date] = percent
 
 
 def find_per_info(data):
     increment = 'daily'
-    stack_msgs_by_day = dict()
+    stack_msgs_by_date = dict()
     total_by_day = dict()
 
     names = {key: data[key]['name'] for key in data.keys()}
@@ -35,22 +35,22 @@ def find_per_info(data):
     convo_ids = data.keys()
     for c_id in convo_ids:
 
-        msgs = data[c_id]['msgs_per_day']
+        msgs = data[c_id]['msgs_by_date']
         for date in msgs.keys():
-            if not date in stack_msgs_by_day:
-                stack_msgs_by_day[date] = dict()
+            if not date in stack_msgs_by_date:
+                stack_msgs_by_date[date] = dict()
 
                 for id in convo_ids:
-                    stack_msgs_by_day[date][id] = 0
+                    stack_msgs_by_date[date][id] = 0
 
-            stack_msgs_by_day[date][c_id] = msgs[date]
+            stack_msgs_by_date[date][c_id] = msgs[date]
 
             if not date in total_by_day:
                 total_by_day[date] = msgs[date]
             else:
                 total_by_day[date] += msgs[date]
 
-    keys = list(sorted(stack_msgs_by_day.keys()))
+    keys = list(sorted(stack_msgs_by_date.keys()))
 
     i = 0
     length = len(keys) - 1
@@ -61,10 +61,10 @@ def find_per_info(data):
         distance = diff.days
         for j in range(distance - 1):
             tmp = currD + timedelta(j + 1)
-            string = tmp.isoformat()[:10]
-            stack_msgs_by_day[string] = dict()
+            string = tmp.date().isoformat()
+            stack_msgs_by_date[string] = dict()
             for id in convo_ids:
-                stack_msgs_by_day[string][id] = 0
+                stack_msgs_by_date[string][id] = 0
             keys.insert(i+j+1, string)
         length = len(keys) - 1
         i += distance
@@ -72,32 +72,31 @@ def find_per_info(data):
     dates = [strtodate(date) for date in keys]
     if len(dates) > 365 * 2:
         increment = 'weekly'
-        tmp_msg_dict = dict()
         one_day = timedelta(days=1)
         while dates[0].weekday() != 6:
             day_before = dates[0] - one_day
-            string = day_before.isoformat()[:10]
-            stack_msgs_by_day[string] = dict()
+            string = day_before.date().isoformat()
+            stack_msgs_by_date[string] = dict()
             for id in convo_ids:
-                stack_msgs_by_day[string][id] = 0
+                stack_msgs_by_date[string][id] = 0
             dates.insert(0, day_before)
         curr_week = dates[0]
         for i in range(len(dates)):
             if dates[i].weekday() == 6:
                 curr_week = dates[i]
             else:
-                week_str = curr_week.isoformat()[:10]
-                curr_str = dates[i].isoformat()[:10]
+                week_str = curr_week.date().isoformat()
+                curr_str = dates[i].date().isoformat()
 
-                for name in stack_msgs_by_day[curr_str].keys():
-                    stack_msgs_by_day[week_str][name] += stack_msgs_by_day[curr_str][name]
+                for name in stack_msgs_by_date[curr_str].keys():
+                    stack_msgs_by_date[week_str][name] += stack_msgs_by_date[curr_str][name]
 
-                stack_msgs_by_day.pop(curr_str)
+                stack_msgs_by_date.pop(curr_str)
 
     msg_list = list()
-    for date in sorted(stack_msgs_by_day.keys()):
+    for date in sorted(stack_msgs_by_date.keys()):
 
-        count_val = stack_msgs_by_day[date]
+        count_val = stack_msgs_by_date[date]
         count_val = {names[key]: count_val[key] for key in count_val}
         count_val['date'] = date
 
@@ -106,32 +105,29 @@ def find_per_info(data):
     return increment, msg_list, total_by_day
 
 
-def get_msgs_by_time(messages):
-    msgDateMap = dict()
+def parse(messages):
+    dates: dict[str, int] = dict()
+    minutes = [0 for _ in range(60 * 24)]
+    split_dict: dict[str, int] = dict()
 
-    msgMinuteList = list()
-    for i in range(24):
-        msgMinuteList.append(list())
-        for j in range(60):
-            msgMinuteList[i].append(0)
+    for message in messages:
+        t = int(message['timestamp_ms']) / 1000
+        d = datetime.fromtimestamp(t)
+        date = d.date().isoformat()
 
-    for msg in messages:
-        t = int(msg['timestamp_ms']) / 1000
-        date = datetime.fromtimestamp(t)
-        iso = date.isoformat()[:10]
+        dates[date] = dates.get(date, 0) + 1
+        minutes[(d.hour * 60) + d.minute] += 1
 
-        if not iso in msgDateMap:
-            msgDateMap[iso] = 1
-        else:
-            msgDateMap[iso] += 1
+        name = message['sender_name']
+        split_dict[name] = split_dict.get(name, 0) + 1
 
-        msgMinuteList[date.hour][date.minute] += 1
+    split = [{
+        'name': name.encode('latin-1').decode('utf-8'),
+        'number': split_dict[name],
+        'percent': split_dict[name] / len(messages) * 100
+    } for name in split_dict.keys()]
 
-    msgs_by_minute = list()
-    for data in msgMinuteList:
-        msgs_by_minute.extend(data)
-
-    return msgDateMap, msgs_by_minute
+    return dates, minutes, split
 
 
 def find_current_percentage(data, total):
@@ -141,57 +137,15 @@ def find_current_percentage(data, total):
     return sorted(data, key=lambda x: x['number'], reverse=True)
 
 
-def get_conversation(convo):
-    tmp = {'number': 0, 'messages': list()}
-    msg_files = [f.name for f in os.scandir(f"{inbox}/{convo}") if f.is_file()]
-    for msg_file in msg_files:
-        fi = open(f"{inbox}/{convo}/{msg_file}")
-        f = json.load(fi)
-        fi.close()
-
-        if not 'name' in tmp:
-            title = f['title'].encode('latin-1').decode('utf-8')
-            tmp['name'] = title
-
-        msgs = f['messages']
-        tmp['number'] += len(msgs)
-        tmp['messages'].extend(msgs)
-
-    return tmp
-
-
-def get_msg_split(messages):
-    split_dict = dict()
-    for msg in messages:
-        name = msg['sender_name']
-        if name not in split_dict:
-            split_dict[name] = list()
-        split_dict[name].append(msg)
-
-    split_list = list()
-    for name in split_dict.keys():
-        split_list.append({
-            'name': name.encode('latin-1').decode('utf-8'),
-            'number': len(split_dict[name]),
-            'percent': len(split_dict[name]) / len(messages) * 100
-        })
-    return split_list
-
-
-def get_emoji_analysis(content):
-    text = str()
-    for c in content:
-        text += c + ' '
-    emoji_dict = dict()
-    emoji_list = list()
+def get_emoji_analysis(content: list[str]):
+    text = " ".join(content)
+    emoji_dict: list[str, int] = dict()
+    emoji_list: list[str] = list()
     count = 0
     for word in regex.findall(r'\X', text):
         if any(char in emoji.UNICODE_EMOJI for char in word):
             count += 1
-            if not word in emoji_dict:
-                emoji_dict[word] = 1
-            else:
-                emoji_dict[word] += 1
+            emoji_dict[word] = emoji_dict.get(word, 0) + 1
             emoji_list.append(word)
     return emoji_dict, emoji_list, count
 
@@ -203,26 +157,21 @@ def generate_count_list(tokens, limit):
 
 
 def get_text_length(content):
-    length = 0
-    for text in content:
-        length += len(text)
+    length = reduce(lambda acc, text: acc + len(text), content, 0)
     return length / len(content) if len(content) > 0 else 0
 
 
-def get_lang_processing(messages):
-    content = [d['content'].encode('latin-1').decode('utf-8')
-               for d in messages if 'content' in d]
+def get_lang_processing(messages: list[dict]):
+    content: list[str] = [d['content'].encode('latin-1').decode('utf-8')
+                          for d in messages if 'content' in d]
 
     text_length = get_text_length(content)
 
     emoji_dict, emoji_list, emoji_count = get_emoji_analysis(content)
 
-    standalone_vocab = nltk.FreqDist(content)
-    standalone_count = generate_count_list(standalone_vocab, 100)
-
-    standalone_total = 0
-    for text in standalone_count:
-        standalone_total += text['count']
+    common_vocab = nltk.FreqDist(content)
+    common_count = generate_count_list(common_vocab, 100)
+    common_total = reduce(lambda acc, t: acc + t['count'], common_count, 0)
 
     return {
         'emoji': {
@@ -231,20 +180,21 @@ def get_lang_processing(messages):
             'count': emoji_count
         },
         'text_count': {
-            'count': standalone_count,
-            'total': standalone_total
+            'count': common_count,
+            'total': common_total
         },
         'text_length': text_length
     }
 
 
-def findStreak(dates):
-    maxdiff = timedelta(days=1)
+def find_streak(dates: list[str]):
+    dates: list[datetime] = sorted([strtodate(date) for date in dates])
+    one_day = timedelta(days=1)
     streak = longest_streak = 1
     start = end = longest_start = longest_end = dates[0]
     for i in range(len(dates) - 1):
         diff = dates[i+1] - dates[i]
-        if diff <= maxdiff:
+        if diff <= one_day:
             streak += 1
             end = dates[i+1]
             if streak >= longest_streak:
@@ -256,19 +206,35 @@ def findStreak(dates):
             start = dates[i+1]
     return {
         'length': longest_streak,
-        'start': longest_start.isoformat()[:10],
-        'end': longest_end.isoformat()[:10]
+        'start': longest_start.date().isoformat(),
+        'end': longest_end.date().isoformat()
     }
 
 
-def get_max_day(msgs_per_day):
-    date = max(msgs_per_day, key=msgs_per_day.get)
-    value = msgs_per_day[date]
+def get_max_day(msgs_by_date: dict[str, int]):
+    date = max(msgs_by_date, key=msgs_by_date.get)
+    value = msgs_by_date[date]
     return {'date': date, 'value': value}
 
 
-def aggregate_data():
+def get_conversation(directory: str):
+    name = str()
+    messages: list[dict] = list()
 
+    path = f"{inbox}/{directory}"
+    msg_files = [f.name for f in os.scandir(path) if f.is_file()]
+
+    for msg_file in msg_files:
+        with open(f"{path}/{msg_file}", encoding="latin-1") as file:
+            f = load(file)
+            if not name:
+                name = str(f['title'].encode('latin-1').decode('utf-8'))
+            messages.extend(f['messages'])
+
+    return name, messages
+
+
+def aggregate_data():
     convo_dirs = [f.name for f in os.scandir(inbox)]
 
     current_percent = list()
@@ -276,34 +242,22 @@ def aggregate_data():
     total = 0
 
     for convo in convo_dirs:
-        convo_info = get_conversation(convo)
-        subtotal = convo_info['number']
-        name = convo_info['name']
-        msgs = convo_info['messages']
-
+        name, messages = get_conversation(convo)
         print('Analyzing messages from', name)
 
+        subtotal = len(messages)
         total += subtotal
         current_percent.append({'number': subtotal, 'name': name})
 
-        msgs_by_day, msgs_by_minute = get_msgs_by_time(msgs)
-
-        msg_split = get_msg_split(msgs)
-
-        dates = list(msgs_by_day.keys())
-        dates = [strtodate(date) for date in dates]
-        dates = sorted(dates)
-
-        streak_info = findStreak(dates)
-
-        lang_processing = get_lang_processing(msgs)
-
-        max_msgs_in_day = get_max_day(msgs_by_day)
+        msgs_by_date, msgs_by_minute, msg_split = parse(messages)
+        streak_info = find_streak(list(msgs_by_date.keys()))
+        lang_processing = get_lang_processing(messages)
+        max_msgs_in_day = get_max_day(msgs_by_date)
 
         conversations[convo] = {
             'name': name,
-            'msgs_per_day': msgs_by_day,
-            'msgs_per_minute': msgs_by_minute,
+            'msgs_by_date': msgs_by_date,
+            'msgs_by_minute': msgs_by_minute,
             'split': msg_split,
             'emoji': lang_processing['emoji'],
             'text_count': lang_processing['text_count'],
@@ -342,7 +296,7 @@ def create_data_dump(data):
 
 
 if __name__ == "__main__":
-    start = time.time()
+    start = time()
 
     writefile = f"{fp}/data.json"
 
@@ -350,6 +304,6 @@ if __name__ == "__main__":
     content = create_data_dump(data)
 
     with open(writefile, 'w', encoding='utf-8') as file:
-        json.dump(content, file, ensure_ascii=False)
+        dump(content, file, ensure_ascii=False)
 
-    print(time.time() - start, "seconds")
+    print(time() - start, "seconds")
