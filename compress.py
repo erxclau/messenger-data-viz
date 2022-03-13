@@ -1,21 +1,23 @@
-import os
-import json
+from os import walk
+from os.path import dirname, abspath
+from json import load, dump
 
-msgdir = f"{os.path.dirname(os.path.abspath(__file__))}/messages"
 
-def compression(indent=None):
-    subdirs = ["archived_threads", "filtered_threads", "inbox", "message_requests"]
+def compress(indent=None):
+    msgdir = f"{dirname(abspath(__file__))}/messages"
+    subdirs = ["archived_threads", "filtered_threads",
+               "inbox", "message_requests"]
     for subdir in subdirs:
         dir = f"{msgdir}/{subdir}"
-        for (dirpath, dirnames, filenames) in os.walk(dir):
-            for filename in filenames:
-                absolute = f"{dirpath}/{filename}"
-                file = open(absolute)
-                if absolute.endswith(".json"):
-                    data = json.load(file)
-                    with open(absolute, 'w') as x:
-                        json.dump(data, x, ensure_ascii=True, indent=indent)
+        for (dirpath, _, filenames) in walk(dir):
+            jsonfiles = [fn for fn in filenames if fn.endswith(".json")]
+            for jsonfile in jsonfiles:
+                absolute = f"{dirpath}/{jsonfile}"
+                with open(absolute, 'r') as f:
+                    data = load(f)
+                with open(absolute, 'w') as f:
+                    dump(data, f, ensure_ascii=True, indent=indent)
 
 
 if __name__ == "__main__":
-    compression()
+    compress()
