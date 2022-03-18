@@ -4,6 +4,7 @@ __pycache__
 
 # Facebook Messages
 messages*
+*.zip
 
 # Analysis
 data.json
