@@ -13,7 +13,7 @@ from regex import findall
 def generate_count_list(tokens, limit):
     vocab = FreqDist(tokens)
     common = vocab.most_common(limit)
-    return [{'text': word[0], 'count': word[1]} for word in common if word[1] > 1]
+    return [{"text": word[0], "count": word[1]} for word in common if word[1] > 1]
 
 
 def decode_str(text: str):
@@ -29,8 +29,7 @@ def strtodate(string: str):
     return datetime.fromisoformat(string)
 
 
-class Conversation():
-
+class Conversation:
     def __init__(self, path: str):
         self.path: str = path
         self.name: str = str()
@@ -50,7 +49,7 @@ class Conversation():
                 conversation = load(f)
                 if not self.name:
                     self.set_name(conversation["title"])
-                msgs = conversation['messages']
+                msgs = conversation["messages"]
                 self.messages.extend([m for m in msgs if is_content(m)])
 
     def set_name(self, title: str):
@@ -76,11 +75,14 @@ class Conversation():
             name = message["sender_name"]
             split[name] = split.get(name, 0) + 1
 
-        self.senders = [{
-            'name': decode_str(name),
-            'number': split[name],
-            'percent': split[name] / len(self.messages) * 100
-        } for name in split.keys()]
+        self.senders = [
+            {
+                "name": decode_str(name),
+                "number": split[name],
+                "percent": split[name] / len(self.messages) * 100,
+            }
+            for name in split.keys()
+        ]
 
     def get_avg_text_length(self):
         content = self.content
@@ -89,14 +91,15 @@ class Conversation():
 
     def analyze_emoji(self):
         text = " ".join(self.content)
-        for word in findall(r'\X', text):
+        for word in findall(r"\X", text):
             if any(char in UNICODE_EMOJI for char in word):
                 self.emoji_count += 1
                 self.emoji[word] = self.emoji.get(word, 0) + 1
 
     def process_language(self):
-        self.content: list[str] = [decode_str(d['content'])
-                                   for d in self.messages if 'content' in d]
+        self.content: list[str] = [
+            decode_str(d["content"]) for d in self.messages if "content" in d
+        ]
 
         self.get_avg_text_length()
         self.analyze_emoji()
@@ -104,7 +107,8 @@ class Conversation():
         common_vocab = FreqDist(self.content)
         self.common_count = generate_count_list(common_vocab, 100)
         self.common_total = reduce(
-            lambda acc, t: acc + t['count'], self.common_count, 0)
+            lambda acc, t: acc + t["count"], self.common_count, 0
+        )
 
     def find_streak(self):
         dates = sorted([strtodate(date) for date in self.dates.keys()])
@@ -112,71 +116,65 @@ class Conversation():
         streak = longest_streak = 1
         start = end = longest_start = longest_end = dates[0]
         for i in range(len(dates) - 1):
-            diff = dates[i+1] - dates[i]
+            diff = dates[i + 1] - dates[i]
             if diff <= one_day:
                 streak += 1
-                end = dates[i+1]
+                end = dates[i + 1]
                 if streak >= longest_streak:
                     longest_streak = streak
                     longest_start = start
                     longest_end = end
             else:
                 streak = 1
-                start = dates[i+1]
-                end = dates[i+1]
+                start = dates[i + 1]
+                end = dates[i + 1]
         self.streak = {
-            'length': longest_streak,
-            'start': longest_start.date().isoformat(),
-            'end': longest_end.date().isoformat()
+            "length": longest_streak,
+            "start": longest_start.date().isoformat(),
+            "end": longest_end.date().isoformat(),
         }
 
     def find_max(self):
         date = max(self.dates, key=self.dates.get)
         value = self.dates[date]
-        self.max = {'date': date, 'value': value}
+        self.max = {"date": date, "value": value}
 
     def get_analysis(self):
         self.analyze()
         return {
-            'name': self.name,
-            'dates': self.dates,
-            'minutes': self.minutes,
-            'senders': self.senders,
-            'emoji': {
-                'count': self.emoji_count,
-                'emojis': self.emoji
-            },
-            'text_count': {
-                'count': self.common_count,
-                'total': self.common_total
-            },
-            'text_length': self.avg_text_length,
-            'streak': self.streak,
-            'max': self.max,
-            'total': len(self.messages)
+            "name": self.name,
+            "dates": self.dates,
+            "minutes": self.minutes,
+            "senders": self.senders,
+            "emoji": {"count": self.emoji_count, "emojis": self.emoji},
+            "text_count": {"count": self.common_count, "total": self.common_total},
+            "text_length": self.avg_text_length,
+            "streak": self.streak,
+            "max": self.max,
+            "total": len(self.messages),
         }
 
 
 def find_percentage_by_day(data, totals):
     for c_id in data.keys():
         convo = data[c_id]
-        convo['percent_per_day'] = dict()
-        for date in convo['dates'].keys():
-            percent = convo['dates'][date] / totals[date] * 100
-            convo['percent_per_day'][date] = percent
+        convo["percent_per_day"] = dict()
+        for date in convo["dates"].keys():
+            percent = convo["dates"][date] / totals[date] * 100
+            convo["percent_per_day"][date] = percent
 
 
 def find_per_info(data):
-    increment = 'daily'
+    increment = "daily"
     stack_msgs_by_date = dict()
     total_by_day = dict()
 
-    names = {key: data[key]['name'] for key in data.keys()}
+    names = {key: data[key]["name"] for key in data.keys()}
 
     convo_ids = data.keys()
     for c_id in convo_ids:
 
-        msgs = data[c_id]['dates']
+        msgs = data[c_id]["dates"]
         for date in msgs.keys():
             if not date in stack_msgs_by_date:
                 stack_msgs_by_date[date] = dict()
@@ -197,7 +195,7 @@ def find_per_info(data):
     length = len(keys) - 1
     while i < length:
         currD = strtodate(keys[i])
-        nextD = strtodate(keys[i+1])
+        nextD = strtodate(keys[i + 1])
         diff = nextD - currD
         distance = diff.days
         for j in range(distance - 1):
@@ -206,13 +204,13 @@ def find_per_info(data):
             stack_msgs_by_date[string] = dict()
             for id in convo_ids:
                 stack_msgs_by_date[string][id] = 0
-            keys.insert(i+j+1, string)
+            keys.insert(i + j + 1, string)
         length = len(keys) - 1
         i += distance
 
     dates = [strtodate(date) for date in keys]
     if len(dates) > 365 * 2:
-        increment = 'weekly'
+        increment = "weekly"
         one_day = timedelta(days=1)
         while dates[0].weekday() != 6:
             day_before = dates[0] - one_day
@@ -230,7 +228,9 @@ def find_per_info(data):
                 curr_str = dates[i].date().isoformat()
 
                 for name in stack_msgs_by_date[curr_str].keys():
-                    stack_msgs_by_date[week_str][name] += stack_msgs_by_date[curr_str][name]
+                    stack_msgs_by_date[week_str][name] += stack_msgs_by_date[curr_str][
+                        name
+                    ]
 
                 stack_msgs_by_date.pop(curr_str)
 
@@ -239,7 +239,7 @@ def find_per_info(data):
 
         count_val = stack_msgs_by_date[date]
         count_val = {names[key]: count_val[key] for key in count_val}
-        count_val['date'] = date
+        count_val["date"] = date
 
         msg_list.append(count_val)
 
@@ -252,27 +252,24 @@ def get_data(inbox: str):
 
     paths: list[str] = [f.name for f in scandir(inbox)]
     for path in paths:
-        c = Conversation(f'{inbox}/{path}')
+        c = Conversation(f"{inbox}/{path}")
 
         subtotal = len(c.messages)
         total += subtotal
 
-        print('Analyzing messages from', c.name)
+        print("Analyzing messages from", c.name)
         conversations[path] = c.get_analysis()
 
     for c in conversations:
-        conversations[c]['percent'] = conversations[c]['total'] / total * 100
+        conversations[c]["percent"] = conversations[c]["total"] / total * 100
 
     increment, msgs_per, total_per_day = find_per_info(conversations)
     find_percentage_by_day(conversations, total_per_day)
 
     return {
-        'total': total,
-        'individual': conversations,
-        'collective': {
-            'data': msgs_per,
-            'increment': increment
-        },
+        "total": total,
+        "individual": conversations,
+        "collective": {"data": msgs_per, "increment": increment},
     }
 
 
@@ -281,11 +278,11 @@ if __name__ == "__main__":
 
     filepath = dirname(abspath(__file__))
     inbox = f"{filepath}/messages/inbox"
-    writefile = f"{filepath}/data.json"
+    writefile = f"{filepath}/src/data.json"
 
     data = get_data(inbox)
 
-    with open(writefile, 'w', encoding='utf-8') as file:
+    with open(writefile, "w", encoding="utf-8") as file:
         dump(data, file, ensure_ascii=False)
 
     print(time() - start, "seconds")

@@ -76,5 +76,5 @@ pip install -r requirements.txt
 - Run the following commands in your virtual environment
   - `python analyze.py`
   - This may take several seconds depending on how much data you have.
-  - `python app`
-- Go to <http://127.0.0.1:5000/>.
+  - `python -m http.server --directory src`
+- Go to <http://127.0.0.1:8000/>.
