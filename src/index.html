@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>messvis</title>
+    <style>
+      @import url("./css/main.css");
+      /* @import url("./css/individual.css"); */
+      @import url("./css/bar-chart.css");
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="copy-container">
+        <p class="copy">
+          Hi! 👋 My name is
+          <a href="https://erxclau.me" target="_blank">Eric Lau</a>. This is
+          <code>messvis</code>, a tool I built to analyze and visualize Facebook
+          Messenger conversations. The design of the visuals is mostly based on
+          my own Messenger data so it may not perfectly showcase your
+          conversations. If you find that something isn't working or have ideas
+          for new features or visuals to add, feel free to open an issue on
+          <a href="https://github.com/erxclau/messvis" target="_blank">GitHub</a
+          >.
+        </p>
+        <hr />
+        <p class="copy">
+          <span id="total"></span> messages have been sent in all of your
+          conversations from <span id="total-date-range"></span>.
+        </p>
+      </section>
+      <section class="graphic-container">
+        <section class="copy-container">
+          <p class="copy"><b>Your top ten conversations by total messages sent</b></p>
+        </section>
+        <div id="bar-chart"></div>
+      </section>
+      <section class="graphic-container">
+        <section class="copy-container">
+          <p class="copy"><b>Your conversations over time by cumulative message count</b></p>
+        </section>
+        <div id="line-chart"></div>
+      </section>
+    </main>
+    <script type="module" src="./js/index.js"></script>
+  </body>
+</html>

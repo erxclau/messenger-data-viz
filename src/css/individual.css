@@ -1,0 +1,47 @@
+.sidebar {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    width: 30%;
+    position: sticky;
+    top: 0;
+}
+
+.sidebar .header {
+    min-height: calc(5vh - 0.5rem);
+    padding-bottom: 0.5rem;
+    font-size: 1.5rem;
+    padding-left: 1.5rem;
+}
+
+#conversations-container {
+    height: calc(95vh - 1rem);
+    overflow-y: scroll;
+}
+
+.conversation {
+    padding: 1rem 2rem;
+    margin-right: 0.5rem;
+    margin-bottom: 0.25rem;
+    border-radius: 5px;
+}
+
+.conversation:hover {
+    cursor: pointer;
+}
+
+#graphic {
+    margin-left: 1rem;
+    width: 100%;
+    padding-top: 1rem;
+}
+
+#graphic #name {
+    font-size: 1rem;
+    font-weight: bold;
+    position: sticky;
+    top: 0;
+    background-color: white;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}

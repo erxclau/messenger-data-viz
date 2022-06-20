@@ -164,86 +164,43 @@ def find_percentage_by_day(data, totals):
             convo["percent_per_day"][date] = percent
 
 
-def find_per_info(data):
-    increment = "daily"
-    stack_msgs_by_date = dict()
+def find_total_by_day(data):
     total_by_day = dict()
 
-    names = {key: data[key]["name"] for key in data.keys()}
-
-    convo_ids = data.keys()
-    for c_id in convo_ids:
-
+    for c_id in data.keys():
         msgs = data[c_id]["dates"]
         for date in msgs.keys():
-            if not date in stack_msgs_by_date:
-                stack_msgs_by_date[date] = dict()
-
-                for id in convo_ids:
-                    stack_msgs_by_date[date][id] = 0
-
-            stack_msgs_by_date[date][c_id] = msgs[date]
-
             if not date in total_by_day:
                 total_by_day[date] = msgs[date]
             else:
                 total_by_day[date] += msgs[date]
 
-    keys = list(sorted(stack_msgs_by_date.keys()))
+    return total_by_day
 
-    i = 0
-    length = len(keys) - 1
-    while i < length:
-        currD = strtodate(keys[i])
-        nextD = strtodate(keys[i + 1])
-        diff = nextD - currD
-        distance = diff.days
-        for j in range(distance - 1):
-            tmp = currD + timedelta(j + 1)
-            string = tmp.date().isoformat()
-            stack_msgs_by_date[string] = dict()
-            for id in convo_ids:
-                stack_msgs_by_date[string][id] = 0
-            keys.insert(i + j + 1, string)
-        length = len(keys) - 1
-        i += distance
 
-    dates = [strtodate(date) for date in keys]
-    if len(dates) > 365 * 2:
-        increment = "weekly"
-        one_day = timedelta(days=1)
-        while dates[0].weekday() != 6:
-            day_before = dates[0] - one_day
-            string = day_before.date().isoformat()
-            stack_msgs_by_date[string] = dict()
-            for id in convo_ids:
-                stack_msgs_by_date[string][id] = 0
-            dates.insert(0, day_before)
-        curr_week = dates[0]
-        for i in range(len(dates)):
-            if dates[i].weekday() == 6:
-                curr_week = dates[i]
-            else:
-                week_str = curr_week.date().isoformat()
-                curr_str = dates[i].date().isoformat()
-
-                for name in stack_msgs_by_date[curr_str].keys():
-                    stack_msgs_by_date[week_str][name] += stack_msgs_by_date[curr_str][
-                        name
-                    ]
-
-                stack_msgs_by_date.pop(curr_str)
-
-    msg_list = list()
-    for date in sorted(stack_msgs_by_date.keys()):
-
-        count_val = stack_msgs_by_date[date]
-        count_val = {names[key]: count_val[key] for key in count_val}
-        count_val["date"] = date
-
-        msg_list.append(count_val)
-
-    return increment, msg_list, total_by_day
+def find_cumulative(data):
+    for c_id in data.keys():
+        data[c_id]["cumulative"] = dict()
+        cumulative = data[c_id]["cumulative"]
+        dates = list(sorted(data[c_id]["dates"].keys()))
+        i = 0
+        length = len(dates) - 1
+        while i < length:
+            current_date = strtodate(dates[i])
+            next_date = strtodate(dates[i+1])
+            data[c_id]["cumulative"][dates[i]] = data[c_id]["dates"][dates[i]]
+            if (i > 0):
+                data[c_id]["cumulative"][dates[i]] += cumulative[dates[i-1]]
+            data[c_id]["cumulative"][dates[i+1]] = data[c_id]["dates"][dates[i+1]] + cumulative[dates[i]]
+            diff = next_date - current_date
+            distance = diff.days
+            for j in range(distance - 1):
+                tmp = current_date + timedelta(j+1)
+                string = tmp.date().isoformat()
+                data[c_id]["cumulative"][string] = cumulative[dates[i]]
+                dates.insert(i+j+1, string)
+            length = len(dates) - 1
+            i += distance        
 
 
 def get_data(inbox: str):
@@ -263,13 +220,13 @@ def get_data(inbox: str):
     for c in conversations:
         conversations[c]["percent"] = conversations[c]["total"] / total * 100
 
-    increment, msgs_per, total_per_day = find_per_info(conversations)
+    total_per_day = find_total_by_day(conversations)
     find_percentage_by_day(conversations, total_per_day)
+    find_cumulative(conversations)
 
     return {
         "total": total,
-        "individual": conversations,
-        "collective": {"data": msgs_per, "increment": increment},
+        "conversations": conversations
     }
 
 

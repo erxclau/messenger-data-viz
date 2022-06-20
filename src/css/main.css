@@ -1,0 +1,49 @@
+html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+}
+
+body {
+  font-size: 1rem;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+a {
+  color: gray;
+}
+
+a:hover {
+  color: rgb(153, 152, 152);
+}
+
+.copy-container {
+  width: 100%;
+  max-width: 600px;
+}
+
+.graphic-container {
+  width: 100%;
+  max-width: 900px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.copy {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  background-color: white;
+  margin-block-start: 0.5em;
+  margin-block-end: 0.5em;
+}
+
+.graphic-container .copy {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
