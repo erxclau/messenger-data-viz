@@ -1,7 +1,7 @@
-﻿autopep8==1.5.3
+autopep8==1.5.3
 click==7.1.2
 emoji==0.5.4
-Flask==1.1.2
+Flask==2.3.2
 itsdangerous==1.1.0
 Jinja2==2.11.3
 joblib==0.16.0
