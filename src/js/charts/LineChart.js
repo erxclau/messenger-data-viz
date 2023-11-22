@@ -13,14 +13,14 @@ class LineChart extends Component {
     const margin = { left: 20, top: 20, right: 20, bottom: 20 };
 
     const cumulative = Object.values(data).map(d =>
-      ({ 
-        data: Object.entries(d.cumulative).map(e => ({
-          date: parseTime(e[0]),
-          value: e[1]
-        })).sort((a, b) => a.date - b.date),
-        name: d.name,
-        total: d.total
-      })
+    ({
+      data: Object.entries(d.cumulative).map(e => ({
+        date: parseTime(e[0]),
+        value: e[1]
+      })).sort((a, b) => a.date - b.date),
+      name: d.name,
+      total: d.total
+    })
     ).sort((a, b) => b.total - a.total);
 
     const x = scaleTime()
@@ -39,18 +39,15 @@ class LineChart extends Component {
 
     return html`
       <svg width="${width}px" height="${height}px">
-        ${cumulative.map((c, i) => 
-            html`
-              <path 
-                d="${l(c.data)}" 
-                fill="none" 
-                stroke="${i < 10 ? "steelblue" : "gainsboro"}" 
-                stroke-width="${i < 10 ? 2 : 1}"
-                name="${c.name}"
-              />
-            `
-          )
-        }
+        ${cumulative.map((c, i) => html`
+            <path
+              d="${l(c.data)}" 
+              fill="none" 
+              stroke="${i < 10 ? "steelblue" : "gainsboro"}" 
+              stroke-width="${i < 10 ? 2 : 1}"
+              name="${c.name}"
+            />
+        `)}
       </svg>
     `;
   }
